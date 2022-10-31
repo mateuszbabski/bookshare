@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(AuthBoilerplate.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(Bookshare.Repo, :manual)

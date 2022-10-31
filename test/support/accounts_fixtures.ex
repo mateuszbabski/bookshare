@@ -1,4 +1,4 @@
-defmodule AuthBoilerplate.AccountsFixtures do
+defmodule Bookshare.AccountsFixtures do
   @moduledoc """
   This module defines test helpers for creating
   entities via the `Hello.Accounts` context.
@@ -18,7 +18,7 @@ defmodule AuthBoilerplate.AccountsFixtures do
     {:ok, user} =
       attrs
       |> valid_user_attributes()
-      |> AuthBoilerplate.Auth.register_user()
+      |> Bookshare.Auth.register_user()
 
     user
   end

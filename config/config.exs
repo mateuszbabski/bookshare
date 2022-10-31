@@ -7,15 +7,15 @@
 # General application configuration
 import Config
 
-config :auth_boilerplate,
-  ecto_repos: [AuthBoilerplate.Repo],
+config :bookshare,
+  ecto_repos: [Bookshare.Repo],
   generators: [binary_id: true]
 
 # Configures the endpoint
-config :auth_boilerplate, AuthBoilerplateWeb.Endpoint,
+config :bookshare, BookshareWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [view: AuthBoilerplateWeb.ErrorView, accepts: ~w(json), layout: false],
-  pubsub_server: AuthBoilerplate.PubSub,
+  render_errors: [view: BookshareWeb.ErrorView, accepts: ~w(json), layout: false],
+  pubsub_server: Bookshare.PubSub,
   live_view: [signing_salt: "CrTer8rl"]
 
 # Configures the mailer
@@ -25,7 +25,7 @@ config :auth_boilerplate, AuthBoilerplateWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :auth_boilerplate, AuthBoilerplate.Mailer, adapter: Swoosh.Adapters.Local
+config :bookshare, Bookshare.Mailer, adapter: Swoosh.Adapters.Local
 
 # Swoosh API client is needed for adapters other than SMTP.
 config :swoosh, :api_client, false

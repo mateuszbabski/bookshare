@@ -1,11 +1,11 @@
 import Config
 
 # Configure your database
-config :auth_boilerplate, AuthBoilerplate.Repo,
+config :bookshare, Bookshare.Repo,
   username: "Dev",
   password: "dev0",
   hostname: "localhost",
-  database: "auth_boilerplate_dev",
+  database: "bookshare_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -16,7 +16,7 @@ config :auth_boilerplate, AuthBoilerplate.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with esbuild to bundle .js and .css sources.
-config :auth_boilerplate, AuthBoilerplateWeb.Endpoint,
+config :bookshare, BookshareWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],

@@ -1,4 +1,4 @@
-defmodule AuthBoilerplateWeb.ConnCase do
+defmodule BookshareWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,7 +11,7 @@ defmodule AuthBoilerplateWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use AuthBoilerplateWeb.ConnCase, async: true`, although
+  by setting `use BookshareWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -22,17 +22,17 @@ defmodule AuthBoilerplateWeb.ConnCase do
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      import AuthBoilerplateWeb.ConnCase
+      import BookshareWeb.ConnCase
 
-      alias AuthBoilerplateWeb.Router.Helpers, as: Routes
+      alias BookshareWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint AuthBoilerplateWeb.Endpoint
+      @endpoint BookshareWeb.Endpoint
     end
   end
 
   setup tags do
-    AuthBoilerplate.DataCase.setup_sandbox(tags)
+    Bookshare.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

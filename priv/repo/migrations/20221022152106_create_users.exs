@@ -1,4 +1,4 @@
-defmodule AuthBoilerplate.Repo.Migrations.CreateUsers do
+defmodule Bookshare.Repo.Migrations.CreateUsers do
   use Ecto.Migration
 
   def change do

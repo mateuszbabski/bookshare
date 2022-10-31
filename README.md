@@ -1,4 +1,4 @@
-# AuthBoilerplate
+# Bookshare
 
 To start your Phoenix server:
 
