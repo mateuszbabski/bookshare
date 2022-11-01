@@ -12,14 +12,29 @@ defmodule BookshareWeb.Auth do
   end
 
   @doc """
+  Deletes all session cookies by certain user
+  from given conn.
+  """
+  def delete_session_tokens_by_user(conn) do
+    user = fetch_current_user(conn)
+    Auth.delete_all_session_tokens_for_user(user)
+  end
+
+  @doc """
   Authenticates the user by looking into the session
   and remember me token.
   """
 
   def fetch_current_user(conn, _opts) do
-      token = fetch_token(get_req_header(conn, "authorization"))
-      user = token && Auth.get_user_by_session_token(token)
-      assign(conn, :current_user, user)
+    token = fetch_token(get_req_header(conn, "authorization"))
+    user = token && Auth.get_user_by_session_token(token)
+    assign(conn, :current_user, user)
+  end
+
+  def fetch_current_user(conn) do
+    token = fetch_token(get_req_header(conn, "authorization"))
+    user = token && Auth.get_user_by_session_token(token)
+    user
   end
 
   @doc """

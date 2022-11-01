@@ -25,7 +25,14 @@ def render("index.json", %{user: user}) do
     }
   end
 
-  def render("forgot_password.json", _params) do
+  def render("forgot_password.json", %{encoded_token: encoded_token}) do
+    %{
+      messages: ["If the account exists, we've sent an email."],
+      encoded_token: encoded_token
+    }
+  end
+
+    def render("forgot_password.json", _params) do
     %{
       messages: ["If the account exists, we've sent an email."]
     }
@@ -53,6 +60,12 @@ def render("index.json", %{user: user}) do
     %{
       id: user.id,
       email: user.email
+    }
+  end
+
+  def render("logout.json", _params) do
+    %{
+      messages: ["Successfully logout"]
     }
   end
 end

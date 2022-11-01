@@ -17,6 +17,7 @@ defmodule BookshareWeb.Router do
     post "/auth/register", AuthController, :register
     post "/auth/forgot_password", AuthController, :forgot_password
     post "/auth/reset_password", AuthController, :reset_password
+    delete "/auth/logout", AuthController, :logout
   end
 
   # Enables LiveDashboard only for development

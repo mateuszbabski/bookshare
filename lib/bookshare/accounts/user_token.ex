@@ -111,7 +111,12 @@ defmodule Bookshare.Accounts.UserToken do
     from t in Bookshare.Accounts.UserToken, where: t.user_id == ^user.id
   end
 
-  def user_and_contexts_query(user, [_ | _] = contexts) do
-    from t in Bookshare.Accounts.UserToken, where: t.user_id == ^user.id and t.context in ^contexts
+  #def user_and_contexts_query(user, [_ | _] = contexts) do
+  #  from t in Bookshare.Accounts.UserToken, where: t.user_id == ^user.id and t.context in ^contexts
+  #end
+
+  def user_and_contexts_query(user, context) do
+    from t in Bookshare.Accounts.UserToken, where: t.user_id == ^user.id and t.context == ^context
   end
+
 end

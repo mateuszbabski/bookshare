@@ -1,13 +1,13 @@
 defmodule BookshareWeb.AuthController do
   use BookshareWeb, :controller
 
-  alias Bookshare.Auth
-
   import BookshareWeb.Auth
+
+  alias Bookshare.Auth
 
   action_fallback BookshareWeb.FallbackController
 
-  plug :require_authenticated_user when action in [:index, :update]
+  plug :require_authenticated_user when action in [:index, :update, :logout]
   plug :require_guest_user when action in [:login, :register]
   plug :get_user_by_reset_password_token when action in [:reset_password]
 
@@ -39,11 +39,12 @@ defmodule BookshareWeb.AuthController do
 
   def forgot_password(conn, %{"email" => email}) do
     if user = Auth.get_user_by_email(email) do
-      # token url
-      Auth.deliver_user_reset_password_instructions(user, fn token -> "#{token}" end)
+      {:ok, encoded_token} = Auth.deliver_user_reset_password_instructions(user)
+      render(conn, "forgot_password.json", encoded_token: encoded_token)
+    else
+      render(conn, "forgot_password.json")
     end
 
-    render(conn, "forgot_password.json")
   end
 
   def reset_password(conn, %{
@@ -55,6 +56,12 @@ defmodule BookshareWeb.AuthController do
         password_confirmation: password_confirmation})
 
       render(conn, "reset_password.json")
+  end
+
+  def logout(conn, _params) do
+    delete_session_tokens_by_user(conn)
+
+    render(conn, "logout.json")
   end
 
   defp get_user_by_reset_password_token(conn, _opts) do

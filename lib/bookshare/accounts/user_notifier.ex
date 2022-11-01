@@ -4,43 +4,25 @@ defmodule Bookshare.Accounts.UserNotifier do
 
   alias Bookshare.Mailer
 
-  #def deliver_reset_password_instructions(user, token) do
-  #  new()
-  #  |> from("admin@admin.com")
-  #  |> to(user.email)
-  #  |> subject("Password reset link")
-  #  |> render_body("forgot_password.html", %{user: user, token: token})
-  #  |> Mailer.deliver()
-  #end
+  @doc """
+    Creates email with reset password link
+  """
+  def create_forgot_password_email(user, token) do
+    url = "/auth/reset_password?token=#{token}"
 
-  # Delivers the email using the application mailer.
-  defp deliver(recipient, subject, body) do
-    email =
-      new()
-      |> to(recipient)
-      |> from({"MyApp", "contact@example.com"})
-      |> subject(subject)
-      |> text_body(body)
-
-    with {:ok, _metadata} <- Mailer.deliver(email) do
-      {:ok, email}
-    end
+    new()
+    |> to(user.email)
+    |> from({"BookShare", "admin@bookshare.com"})
+    |> subject("BookShare - Reset Password")
+    |> render_body("forgot_password.html", %{email: user.email, url: url, token: token})
   end
 
   @doc """
-  Deliver instructions to reset a user password.
+    Delivers the email using application mailer
   """
-  def deliver_reset_password_instructions(user, url) do
-    deliver(user.email, "Reset password instructions", """
-    ==============================
-    Hi #{user.email},
-    You can reset your password by visiting the URL below:
-    #{url}
-    If you didn't request this change, please ignore this.
-    ==============================
-    """)
+  def send_forgot_password_email(user, token) do
+    user
+    |> create_forgot_password_email(token)
+    |> Mailer.deliver()
   end
-
-
-
 end
