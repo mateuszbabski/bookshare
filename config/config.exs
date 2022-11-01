@@ -25,10 +25,12 @@ config :bookshare, BookshareWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :bookshare, Bookshare.Mailer, adapter: Swoosh.Adapters.Local
+config :bookshare, Bookshare.Mailer,
+  adapter: Swoosh.Adapters.Sendinblue,
+  api_key: System.get_env("MAILER_API_KEY")
 
 # Swoosh API client is needed for adapters other than SMTP.
-config :swoosh, :api_client, false
+config :swoosh, :api_client, Swoosh.ApiClient.Hackney
 
 # Configures Elixir's Logger
 config :logger, :console,

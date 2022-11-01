@@ -2,6 +2,8 @@ defmodule Bookshare.Accounts.UserNotifier do
   use Phoenix.Swoosh,
     view: BookshareWeb.EmailView
 
+  import Swoosh.Email
+
   alias Bookshare.Mailer
 
   @doc """
