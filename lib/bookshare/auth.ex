@@ -152,7 +152,7 @@ defmodule Bookshare.Auth do
   @doc """
   Delivers the reset password email to the given user.
   ## Examples
-      iex> deliver_user_reset_password_instructions(user, &Routes.user_reset_password_url(conn, :edit, &1))
+      iex> deliver_user_reset_password_instructions(user)
       {:ok, %{to: ..., body: ...}}
   """
 

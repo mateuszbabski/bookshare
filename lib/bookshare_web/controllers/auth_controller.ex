@@ -44,7 +44,6 @@ defmodule BookshareWeb.AuthController do
     else
       render(conn, "forgot_password.json")
     end
-
   end
 
   def reset_password(conn, %{
