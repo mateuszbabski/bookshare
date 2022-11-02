@@ -19,9 +19,11 @@ def render("index.json", %{user: user}) do
     }
   end
 
-  def render("register.json", %{:user => user}) do
+  def render("register.json", %{:user => user, :encoded_token => encoded_token}) do
     %{
-      data: render_one(user, AuthView, "privileged_user.json", as: :user)
+      data: render_one(user, AuthView, "privileged_user.json", as: :user),
+      message: "Check your email for confirmation instructions",
+      encoded_token: encoded_token
     }
   end
 

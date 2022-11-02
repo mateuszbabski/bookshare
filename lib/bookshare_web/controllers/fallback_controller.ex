@@ -30,6 +30,14 @@ defmodule BookshareWeb.FallbackController do
     |> render(:"401")
   end
 
+    # This clause handles authentication errors.
+  def call(conn, {:error, :unauthorized, err}) do
+    conn
+    |> put_status(:unauthorized)
+    |> put_view(BookshareWeb.ErrorView)
+    |> render(:"401", error: err)
+  end
+
   # This clause handles any user submission problems.
   def call(conn, {:error, :bad_request, err}) do
     conn

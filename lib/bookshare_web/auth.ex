@@ -60,7 +60,7 @@ defmodule BookshareWeb.Auth do
   """
 
   def require_authenticated_user(conn, _opts) do
-    if conn.assigns[:current_user] != nil do
+    if conn.assigns[:current_user] != nil and conn.assigns[:current_user].is_confirmed do
       conn
     else
       conn

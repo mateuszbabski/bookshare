@@ -7,6 +7,7 @@ defmodule Bookshare.Repo.Migrations.CreateUsers do
     create table(:users) do
       add :email, :citext, null: false
       add :hash_password, :string
+      add :is_confirmed, :boolean, default: false
 
       timestamps()
     end

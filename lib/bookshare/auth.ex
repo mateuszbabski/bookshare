@@ -201,4 +201,44 @@ defmodule Bookshare.Auth do
     end
   end
 
+  @doc """
+  Delivers the confirmation email to the given user.
+  ## Examples
+      iex> deliver_confirmation_instructions(user)
+      {:ok, %{to: ..., body: ...}}
+  """
+
+  def deliver_confirmation_instructions(%User{} = user) do
+      if user.is_confirmed do
+        {:error, :already_confirmed}
+      else
+        {encoded_token, user_token} = UserToken.build_email_token(user, "confirm")
+        Repo.insert!(user_token)
+        UserNotifier.send_confirmation_email(user, encoded_token)
+        {:ok, encoded_token}
+      end
+  end
+
+  @doc """
+  Confirms the user with given token.any()
+
+  If the token matches, the user account is marked
+  as confirmed and confirmation token is deleted
+  """
+
+  def confirm_user(token) do
+    with {:ok, query} <- UserToken.verify_email_token_query(token, "confirm"),
+         %User{} = user <- Repo.one(query),
+         {:ok, %{user: user}} <- Repo.transaction(confirm_user_multi(user)) do
+      {:ok, user}
+    else
+      _ -> :error
+    end
+  end
+
+  defp confirm_user_multi(user) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:user, User.confirm_changeset(user))
+    |> Ecto.Multi.delete_all(:tokens, UserToken.user_and_contexts_query(user, "confirm"))
+  end
 end

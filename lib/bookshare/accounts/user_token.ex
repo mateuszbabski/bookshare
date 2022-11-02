@@ -8,6 +8,7 @@ defmodule Bookshare.Accounts.UserToken do
 
   @reset_password_validity_in_days 1
   @session_validity_in_days 30
+  @confirm_validity_in_days 7
 
   schema "users_tokens" do
     field :token, :binary
@@ -94,6 +95,7 @@ defmodule Bookshare.Accounts.UserToken do
     end
   end
 
+  defp days_for_context("confirm"), do: @confirm_validity_in_days
   defp days_for_context("reset_password"), do: @reset_password_validity_in_days
 
 

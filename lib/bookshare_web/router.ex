@@ -15,6 +15,7 @@ defmodule BookshareWeb.Router do
     patch "/auth", AuthController, :update
     post "/auth/login", AuthController, :login
     post "/auth/register", AuthController, :register
+    post "/auth/confirm", AuthController, :confirm_email
     post "/auth/forgot_password", AuthController, :forgot_password
     post "/auth/reset_password", AuthController, :reset_password
     delete "/auth/logout", AuthController, :logout

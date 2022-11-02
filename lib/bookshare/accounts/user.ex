@@ -7,6 +7,7 @@ defmodule Bookshare.Accounts.User do
     field :email, :string
     field :hash_password, :string
     field :password, :string, virtual: true
+    field :is_confirmed, :boolean
 
     timestamps()
   end
@@ -69,6 +70,14 @@ defmodule Bookshare.Accounts.User do
     |> cast(attrs, [:password])
     |> validate_confirmation(:password, message: "does not match password")
     |> validate_password()
+  end
+
+  @doc """
+    Change user's status by setting is_confirmed to true
+  """
+
+  def confirm_changeset(user) do
+    change(user, is_confirmed: true)
   end
 
   @doc """

@@ -18,4 +18,17 @@ defmodule Bookshare.Accounts.UserNotifier do
 
     Mailer.deliver(email)
   end
+
+  def send_confirmation_email(user, token) do
+    url = "/auth/confirm?token=#{token}"
+
+    email =
+    new()
+    |> to(user.email)
+    |> from({"BookShare", "admin@bookshare.com"})
+    |> subject("BookShare - Confirm account")
+    |> render_body("confirm_account.html", %{email: user.email, url: url, token: token})
+
+    Mailer.deliver(email)
+  end
 end

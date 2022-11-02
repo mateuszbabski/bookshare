@@ -17,23 +17,37 @@ defmodule BookshareWeb.AuthController do
 
   def login(conn, %{"email" => email, "password" => password}) do
     if user = Auth.get_user_by_email_and_password(email, password) do
-      token = get_token(user)
-      conn
-      |> put_status(:ok)
-      |> render("login.json", user: user, token: token)
+      if user.is_confirmed do
+        token = get_token(user)
+        conn
+        |> put_status(:ok)
+        |> render("login.json", user: user, token: token)
+      else
+        {:error, :unauthorized, "Account not confirmed"}
+      end
     else
-      {:error, :bad_request, "invalid email or password"}
+      {:error, :bad_request, "Invalid email or password"}
     end
   end
 
   def register(conn, %{"user" => params}) do
-    with {:ok, user} <- Auth.register_user(params) do
+    with {:ok, user} <- Auth.register_user(params),
+         {:ok, encoded_token} <- Auth.deliver_confirmation_instructions(user) do
+
         conn
         |> put_status(:created)
-        |> render("register.json", user: user)
+        |> render("register.json", user: user, encoded_token: encoded_token)
       else
         {:error, changeset} ->
           {:error, changeset}
+    end
+  end
+
+  def confirm_email(conn, %{"token" => token}) do
+    case Auth.confirm_user(token) do
+      {:ok, _} -> render(conn, "confirm_email.json")
+
+      :error -> {:error, :bad_request, "Invalid token"}
     end
   end
 
@@ -46,15 +60,26 @@ defmodule BookshareWeb.AuthController do
     end
   end
 
-  def reset_password(conn, %{
-        "password" => password,
-        "password_confirmation" => password_confirmation
-        }) do
-      Auth.reset_user_password(conn.assigns.user, %{
-        password: password,
-        password_confirmation: password_confirmation})
+  # def reset_password(conn, %{
+  #       "password" => password,
+  #       "password_confirmation" => password_confirmation
+  #       }) do
+  #     Auth.reset_user_password(conn.assigns.user, %{
+  #       password: password,
+  #       password_confirmation: password_confirmation})
 
-      render(conn, "reset_password.json")
+  #     render(conn, "reset_password.json")
+  # end
+
+  def reset_password(conn, %{ "password" => password, "password_confirmation" => password_confirmation}) do
+      with {:ok, _user} <- Auth.reset_user_password(conn.assigns.user, %{
+                            password: password,
+                            password_confirmation: password_confirmation}) do
+        render(conn, "reset_password.json")
+      else
+        {:error, changeset} -> {:error, changeset}
+      end
+
   end
 
   def logout(conn, _params) do
