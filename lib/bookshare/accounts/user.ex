@@ -2,12 +2,13 @@ defmodule Bookshare.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-
   schema "users" do
     field :email, :string
     field :hash_password, :string
     field :password, :string, virtual: true
     field :is_confirmed, :boolean
+
+    has_one :profile, Bookshare.Accounts.Profile, on_delete: :delete_all
 
     timestamps()
   end

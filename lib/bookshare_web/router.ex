@@ -8,6 +8,21 @@ defmodule BookshareWeb.Router do
     plug :fetch_current_user
   end
 
+  pipeline :protected do
+    plug :require_authenticated_user
+  end
+
+  scope "/api/user", BookshareWeb do
+    pipe_through [:api, :protected]
+  end
+
+  scope "/api/user", BookshareWeb do
+    pipe_through :api
+
+    get "/all", ProfileController, :index
+    get "/:id", ProfileController, :show
+  end
+
   scope "/api", BookshareWeb do
     pipe_through :api
 
@@ -20,6 +35,8 @@ defmodule BookshareWeb.Router do
     post "/auth/reset_password", AuthController, :reset_password
     delete "/auth/logout", AuthController, :logout
   end
+
+
 
   # Enables LiveDashboard only for development
   #
