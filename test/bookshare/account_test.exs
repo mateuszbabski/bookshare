@@ -224,10 +224,7 @@ defmodule Bookshare.AccountTest do
     end
 
     test "sends token through notification", %{user: user} do
-      token =
-        extract_user_token(fn url ->
-          Auth.deliver_user_reset_password_instructions(user, url)
-        end)
+      {:ok, token} = Auth.deliver_user_reset_password_instructions(user)
       {:ok, token} = Base.url_decode64(token, padding: false)
       assert user_token = Repo.get_by(UserToken, token: :crypto.hash(:sha256, token))
       assert user_token.user_id == user.id
@@ -240,10 +237,7 @@ defmodule Bookshare.AccountTest do
     setup do
       user = user_fixture()
 
-      token =
-        extract_user_token(fn url ->
-          Auth.deliver_user_reset_password_instructions(user, url)
-        end)
+      {:ok, token} = Auth.deliver_user_reset_password_instructions(user)
 
       %{user: user, token: token}
     end

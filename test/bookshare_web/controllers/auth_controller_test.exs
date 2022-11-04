@@ -13,7 +13,7 @@ defmodule BookshareWeb.AuthControllerTest do
   @incorrect_credentials %{email: "incorrect", password: "incorrect"}
 
   def fixture(:user) do
-    insert(:user, email: "test0@test0.local", password: "test0000")
+    insert(:user, email: "test0@test0.local", password: "test0000", is_confirmed: true)
   end
 
   def create_user(_) do
@@ -98,7 +98,7 @@ defmodule BookshareWeb.AuthControllerTest do
     test "doesnt divulge user existence", %{conn: conn, user: user} do
       conn_real = post(conn, Routes.auth_path(conn, :forgot_password), %{email: user.email})
       conn_fake = post(conn, Routes.auth_path(conn, :forgot_password), %{email: "fake@email.com"})
-      assert json_response(conn_real, 200) == json_response(conn_fake, 200)
+      assert json_response(conn_real, 200)["messages"] == json_response(conn_fake, 200)["messages"]
     end
 
     test "resets password successfully", %{conn: conn, user: user} do

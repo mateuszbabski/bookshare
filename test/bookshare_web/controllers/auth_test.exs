@@ -5,7 +5,7 @@ defmodule Bookshare.AuthTest do
   alias BookshareWeb.Auth
 
   def fixture(:user) do
-    insert(:user, email: "test0@test0.local", password: "test0000")
+    insert(:user, email: "test0@test0.local", password: "test0000", is_confirmed: true)
   end
 
   def create_user(_) do
