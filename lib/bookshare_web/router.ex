@@ -17,13 +17,15 @@ defmodule BookshareWeb.Router do
 
     post "/create", ProfileController, :create
     patch "/update", ProfileController, :update
+    get "/account", ProfileController, :show_me
   end
 
   scope "/api/user", BookshareWeb do
     pipe_through :api
 
-    #get "/all", ProfileController, :index
-    #get "/:id", ProfileController, :show
+    get "/all", ProfileController, :index
+    get "/:id", ProfileController, :show
+    #get "/email", ProfileController, :show_by_email
   end
 
   scope "/api", BookshareWeb do

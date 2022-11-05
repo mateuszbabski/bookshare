@@ -37,24 +37,26 @@ defmodule Bookshare.Accounts do
   """
   def get_profile!(id), do: Repo.get!(Profile, id)
 
-  def get_profile(user_id), do: Repo.get(Profile, [user_id: user_id])
+  # def get_profile_by_user_email(email) do
+  #   Bookshare.Auth.get_user_by_email(email)
+  # end
 
   @doc """
-  Checks if user has profile.
+  Gets profile by user_id.
 
   Raises `Ecto.NoResultsError` if the Profile does not exist.
 
   ## Examples
 
-      iex> check_if_user_has_profile(123)
+      iex> get_profile_by_user_id(123)
       %Profile{}
 
-      iex> check_if_user_has_profile(456)
+      iex> get_profile_by_user_id(456)
       ** (Ecto.NoResultsError)
 
   """
 
-  def check_if_user_has_profile(user_id) do
+  def get_profile_by_user_id(user_id) do
     Repo.get_by(Profile, [user_id: user_id])
   end
 
