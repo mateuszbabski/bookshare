@@ -14,7 +14,7 @@ defmodule BookshareWeb.ProfileController do
   def create(conn, profile_params) do
     user = conn.assigns.current_user
 
-    if Accounts.check_if_user_has_profile(user.id) do
+   if Accounts.check_if_user_has_profile(user.id) do
       conn
       |> put_status(:forbidden)
       |> json(%{message: "You are allowed to have only one profile"})
@@ -24,6 +24,7 @@ defmodule BookshareWeb.ProfileController do
         |> put_status(:created)
         |> json(%{username: profile.username, message: "Profile created"})
       end
+    end
   end
   # def create(conn, profile_params) do
   #   user = conn.assigns.current_user
@@ -39,13 +40,23 @@ defmodule BookshareWeb.ProfileController do
   #   render(conn, "show.json", profile: profile)
   # end
 
-  # def update(conn, %{"id" => id, "profile" => profile_params}) do
-  #   profile = Accounts.get_profile!(id)
+  def update(conn, profile_params) do
+    user = conn.assigns.current_user
+    with %Profile{} = profile <- Accounts.check_if_user_has_profile(user.id),
+         {:ok, %Profile{}}    <- Accounts.update_profile(profile, profile_params) do
+      render(conn, "profile_updated.json")
+    else
+      {:error, changeset} -> {:error, changeset}
 
-  #   with {:ok, %Profile{} = profile} <- Accounts.update_profile(profile, profile_params) do
-  #     render(conn, "show.json", profile: profile)
-  #   end
-  # end
+      nil -> json(conn, %{message: "User does not have profile"})
+    end
 
-end
+    #if Accounts.check_if_user_has_profile(user.id) do
+    #profile = Accounts.get_profile!(id)
+    #Accounts.update_profile(profile, profile_params)
+    #render(conn, "profile_updated.json", profile: profile)
+    #else
+    #json(conn, %{message: "User does not have profile yet"})
+    #end
+  end
 end

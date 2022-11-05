@@ -37,7 +37,7 @@ defmodule Bookshare.Accounts do
   """
   def get_profile!(id), do: Repo.get!(Profile, id)
 
-  def get_profile(id), do: Repo.get(Profile, id)
+  def get_profile(user_id), do: Repo.get(Profile, [user_id: user_id])
 
   @doc """
   Checks if user has profile.
@@ -46,10 +46,10 @@ defmodule Bookshare.Accounts do
 
   ## Examples
 
-      iex> get_profile!(123)
+      iex> check_if_user_has_profile(123)
       %Profile{}
 
-      iex> get_profile!(456)
+      iex> check_if_user_has_profile(456)
       ** (Ecto.NoResultsError)
 
   """

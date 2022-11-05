@@ -17,9 +17,8 @@ defmodule BookshareWeb.ProfileView do
     }
   end
 
-  def render("profile_updated.json", %{profile: profile}) do
+  def render("profile_updated.json", _params) do
     %{
-      username: profile.username,
       message: "User's profile updated"
     }
   end

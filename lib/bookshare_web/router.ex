@@ -16,7 +16,7 @@ defmodule BookshareWeb.Router do
     pipe_through [:api, :protected]
 
     post "/create", ProfileController, :create
-    #patch "/update", ProfileController, :update
+    patch "/update", ProfileController, :update
   end
 
   scope "/api/user", BookshareWeb do
