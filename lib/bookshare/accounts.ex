@@ -35,7 +35,28 @@ defmodule Bookshare.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_profile!(user_id), do: Repo.get!(Profile, user_id)
+  def get_profile!(id), do: Repo.get!(Profile, id)
+
+  def get_profile(id), do: Repo.get(Profile, id)
+
+  @doc """
+  Checks if user has profile.
+
+  Raises `Ecto.NoResultsError` if the Profile does not exist.
+
+  ## Examples
+
+      iex> get_profile!(123)
+      %Profile{}
+
+      iex> get_profile!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+
+  def check_if_user_has_profile(user_id) do
+    Repo.get_by(Profile, [user_id: user_id])
+  end
 
   @doc """
   Creates a profile.
@@ -49,9 +70,10 @@ defmodule Bookshare.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_profile(attrs \\ %{}) do
+  def create_profile(user, attrs \\ %{}) do
     %Profile{}
     |> Profile.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
   end
 
@@ -73,21 +95,6 @@ defmodule Bookshare.Accounts do
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a profile.
-
-  ## Examples
-
-      iex> delete_profile(profile)
-      {:ok, %Profile{}}
-
-      iex> delete_profile(profile)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_profile(%Profile{} = profile) do
-    Repo.delete(profile)
-  end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking profile changes.

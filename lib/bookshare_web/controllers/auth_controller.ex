@@ -60,17 +60,6 @@ defmodule BookshareWeb.AuthController do
     end
   end
 
-  # def reset_password(conn, %{
-  #       "password" => password,
-  #       "password_confirmation" => password_confirmation
-  #       }) do
-  #     Auth.reset_user_password(conn.assigns.user, %{
-  #       password: password,
-  #       password_confirmation: password_confirmation})
-
-  #     render(conn, "reset_password.json")
-  # end
-
   def reset_password(conn, %{ "password" => password, "password_confirmation" => password_confirmation}) do
       with {:ok, _user} <- Auth.reset_user_password(conn.assigns.user, %{
                             password: password,
@@ -79,7 +68,6 @@ defmodule BookshareWeb.AuthController do
       else
         {:error, changeset} -> {:error, changeset}
       end
-
   end
 
   def logout(conn, _params) do

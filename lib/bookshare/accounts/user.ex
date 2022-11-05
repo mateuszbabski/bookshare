@@ -19,7 +19,6 @@ defmodule Bookshare.Accounts.User do
     |> cast(attrs, [:email, :password])
     |> validate_email()
     |> validate_password()
-
   end
 
   defp validate_email(changeset) do
