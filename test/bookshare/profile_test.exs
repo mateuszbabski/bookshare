@@ -13,10 +13,10 @@ defmodule Bookshare.ProfileTest do
       %{user: AccountsFixtures.user_fixture()}
     end
 
-    # test "get_profile!/1 returns the profile with given id", %{user: user} do
-    #   profile = profile_fixture(user)
-    #   assert Accounts.get_profile!(profile.id) == profile
-    # end
+    test "get_profile!/1 returns the profile with given id", %{user: user} do
+      profile = AccountsFixtures.profile_fixture(user)
+      assert Accounts.get_profile(profile.id) == profile
+    end
 
     test "create_profile/1 with valid data creates a profile", %{user: user} do
       valid_attrs = %{username: "username"}
@@ -40,7 +40,7 @@ defmodule Bookshare.ProfileTest do
     test "update_profile/2 with invalid data returns error changeset", %{user: user} do
       profile = AccountsFixtures.profile_fixture(user)
       assert {:error, %Ecto.Changeset{}} = Accounts.update_profile(profile, @invalid_attrs)
-      assert profile == Accounts.get_profile!(profile.id)
+      assert profile == Accounts.get_profile(profile.id)
     end
 
     test "change_profile/1 returns a profile changeset", %{user: user} do

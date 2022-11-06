@@ -1,84 +1,127 @@
-# defmodule BookshareWeb.ProfileControllerTest do
-#   use BookshareWeb.ConnCase
+defmodule BookshareWeb.ProfileControllerTest do
+  use BookshareWeb.ConnCase
 
-#   import Bookshare.ProfileFixtures
+  alias Bookshare.AccountsFixtures
+  alias Bookshare.Auth
 
-#   alias Bookshare.Accounts.Profile
+  import Bookshare.Factory
 
-#   @create_attrs %{
-#     username: "some username"
-#   }
-#   @update_attrs %{
-#     username: "some updated username"
-#   }
-#   @invalid_attrs %{username: nil}
+  @create_attrs %{
+    username: "Username"
+  }
+  @update_attrs %{
+    username: "UpdatedUsername"
+  }
+  @invalid_attrs %{username: nil}
 
-#   setup %{conn: conn} do
-#     {:ok, conn: put_req_header(conn, "accept", "application/json")}
-#   end
+  def fixture(:user) do
+    insert(:user, email: "test0@test0.local", password: "test0000", is_confirmed: true)
+  end
 
-#   describe "index" do
-#     test "lists all profiles", %{conn: conn} do
-#       conn = get(conn, Routes.profile_path(conn, :index))
-#       assert json_response(conn, 200)["data"] == []
-#     end
-#   end
+  def create_user(_) do
+    %{user: fixture(:user)}
+  end
 
-#   describe "create profile" do
-#     test "renders profile when data is valid", %{conn: conn} do
-#       conn = post(conn, Routes.profile_path(conn, :create), profile: @create_attrs)
-#       assert %{"id" => id} = json_response(conn, 201)["data"]
+  setup %{conn: conn} do
+    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+  end
 
-#       conn = get(conn, Routes.profile_path(conn, :show, id))
+  describe "index" do
+    test "lists all profiles", %{conn: conn} do
+      conn = get(conn, Routes.profile_path(conn, :index))
+      assert json_response(conn, 200)["data"] == []
+    end
+  end
 
-#       assert %{
-#                "id" => ^id,
-#                "username" => "some username"
-#              } = json_response(conn, 200)["data"]
-#     end
+  describe "create profile" do
+    setup [:create_user]
 
-#     test "renders errors when data is invalid", %{conn: conn} do
-#       conn = post(conn, Routes.profile_path(conn, :create), profile: @invalid_attrs)
-#       assert json_response(conn, 422)["errors"] != %{}
-#     end
-#   end
+    test "creates profile when data is valid", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
 
-#   describe "update profile" do
-#     setup [:create_profile]
+      conn = post(conn, Routes.profile_path(conn, :create), @create_attrs)
+      assert json_response(conn, 201)
+      assert json_response(conn, 201)["message"]
+    end
 
-#     test "renders profile when data is valid", %{conn: conn, profile: %Profile{id: id} = profile} do
-#       conn = put(conn, Routes.profile_path(conn, :update, profile), profile: @update_attrs)
-#       assert %{"id" => ^id} = json_response(conn, 200)["data"]
+    test "renders errors when data is invalid", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
 
-#       conn = get(conn, Routes.profile_path(conn, :show, id))
+      conn = post(conn, Routes.profile_path(conn, :create), @invalid_attrs)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
 
-#       assert %{
-#                "id" => ^id,
-#                "username" => "some updated username"
-#              } = json_response(conn, 200)["data"]
-#     end
+    test "renders errors when user is unauthorized", %{conn: conn} do
+      conn = post(conn, Routes.profile_path(conn, :create), @invalid_attrs)
+      assert json_response(conn, 401)["errors"] != %{}
+    end
+  end
 
-#     test "renders errors when data is invalid", %{conn: conn, profile: profile} do
-#       conn = put(conn, Routes.profile_path(conn, :update, profile), profile: @invalid_attrs)
-#       assert json_response(conn, 422)["errors"] != %{}
-#     end
-#   end
+  describe "update profile" do
+    setup [:create_user]
 
-#   describe "delete profile" do
-#     setup [:create_profile]
+    test "renders profile when data is valid", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
+      profile = AccountsFixtures.profile_fixture(user)
 
-#     test "deletes chosen profile", %{conn: conn, profile: profile} do
-#       conn = delete(conn, Routes.profile_path(conn, :delete, profile))
-#       assert response(conn, 204)
+      conn = patch(conn, Routes.profile_path(conn, :update), @update_attrs)
+      assert json_response(conn, 200)["message"] == "User's profile updated"
 
-#       assert_error_sent 404, fn ->
-#         get(conn, Routes.profile_path(conn, :show, profile))
-#       end
-#     end
-#   end
+      conn = get(conn, Routes.profile_path(conn, :show, profile.id))
+      assert json_response(conn, 200)["username"] == "UpdatedUsername"
+    end
 
-#   defp create_profile(_) do
-#     profile = profile_fixture()
-#     %{profile: profile}
-#   end
-# end
+    test "renders errors when data is invalid", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
+      _profile = AccountsFixtures.profile_fixture(user)
+
+      conn = patch(conn, Routes.profile_path(conn, :update), @invalid_attrs)
+      assert json_response(conn, 422)["errors"]
+      assert json_response(conn, 422)["errors"]["username"] == ["can't be blank"]
+    end
+  end
+
+  describe "show profile" do
+    setup [:create_user]
+
+    test "renders profile when data is valid", %{conn: conn, user: user} do
+      profile = AccountsFixtures.profile_fixture(user)
+      conn = get(conn, Routes.profile_path(conn, :show, profile.id))
+      assert json_response(conn, 200)
+      assert json_response(conn, 200)["username"] == profile.username
+    end
+
+    test "renders errors when data is invalid", %{conn: conn} do
+      conn = get(conn, Routes.profile_path(conn, :show, 1))
+      assert json_response(conn, 404)
+      assert json_response(conn, 404)["message"] == "Profile not found"
+    end
+  end
+
+  describe "show_me profile" do
+    setup [:create_user]
+
+    test "renders profile when data is valid", %{conn: conn, user: user} do
+      token = Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
+
+      profile = AccountsFixtures.profile_fixture(user)
+
+      conn = get(conn, Routes.profile_path(conn, :show_me))
+      assert json_response(conn, 200)
+      assert json_response(conn, 200)["username"] == profile.username
+    end
+
+    test "renders errors when data is invalid", %{conn: conn, user: user} do
+      _profile = AccountsFixtures.profile_fixture(user)
+      conn = get(conn, Routes.profile_path(conn, :show_me))
+
+      assert json_response(conn, 401)
+      assert json_response(conn, 401)["errors"]["detail"] == "Unauthorized"
+    end
+  end
+end

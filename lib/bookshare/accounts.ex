@@ -36,7 +36,7 @@ defmodule Bookshare.Accounts do
 
   """
   #def get_profile!(id), do: Repo.get!(Profile, id)
-  def get_profile!(id), do: Repo.get!(Profile, id) |> Repo.preload(:user)
+  def get_profile(id), do: Repo.get(Profile, id) |> Repo.preload(:user)
 
   @doc """
   Gets profile by user_id.

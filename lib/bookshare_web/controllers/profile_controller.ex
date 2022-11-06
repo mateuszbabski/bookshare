@@ -12,8 +12,13 @@ defmodule BookshareWeb.ProfileController do
   end
 
   def show(conn, %{"id" => id}) do
-    profile = Accounts.get_profile!(id)
-    render(conn, "show.json", profile: profile)
+    if profile = Accounts.get_profile(id) do
+      render(conn, "show.json", profile: profile)
+    else
+      conn
+      |> put_status(:not_found)
+      |> json(%{message: "Profile not found"})
+    end
   end
 
   def show_me(conn, _params) do
@@ -25,7 +30,7 @@ defmodule BookshareWeb.ProfileController do
   def create(conn, profile_params) do
     user = conn.assigns.current_user
 
-   if Accounts.get_profile_by_user_id(user.id) do
+    if Accounts.get_profile_by_user_id(user.id) do
       conn
       |> put_status(:forbidden)
       |> json(%{message: "You are allowed to have only one profile"})

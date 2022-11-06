@@ -132,4 +132,22 @@ defmodule BookshareWeb.AuthControllerTest do
       assert json_response(conn, 401)
     end
   end
+
+  describe "Confirm password" do
+    setup [:create_user]
+
+    test "confirm/1 with valid token", %{conn: conn, user: user} do
+      {token, user_token} = Accounts.UserToken.build_email_token(user, "confirm")
+      Repo.insert!(user_token)
+
+      conn = post(conn, Routes.auth_path(conn, :confirm_email, %{token: token}))
+      assert json_response(conn, 200)
+    end
+
+    test "confirm/1 with invalid token raises bad_request", %{conn: conn} do
+      conn = post(conn, Routes.auth_path(conn, :confirm_email, %{token: "token"}))
+      assert json_response(conn, 400)
+      assert json_response(conn, 400)["errors"] == ["Invalid token"]
+    end
+  end
 end

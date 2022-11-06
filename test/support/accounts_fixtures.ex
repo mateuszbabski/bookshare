@@ -24,6 +24,16 @@ defmodule Bookshare.AccountsFixtures do
     user
   end
 
+  def confirmed_user_fixture(attrs \\ %{}) do
+    {:ok, user} =
+      attrs
+      |> valid_user_attributes()
+      |> Bookshare.Auth.register_user()
+
+    user = Map.put(user, :is_confirmed, true)
+    user
+  end
+
     @doc """
   Generate a unique profile username.
   """
