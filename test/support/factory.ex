@@ -6,7 +6,8 @@ defmodule Bookshare.Factory do
 
     user = %Bookshare.Accounts.User{
       email: sequence(:email, &"email-#{&1}@example.com"),
-      hash_password: Bcrypt.hash_pwd_salt(password)
+      hash_password: Bcrypt.hash_pwd_salt(password),
+      is_confirmed: true
     }
 
     merge_attributes(user, attrs)

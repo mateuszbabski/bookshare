@@ -16,11 +16,6 @@ defmodule BookshareWeb.ProfileController do
     render(conn, "show.json", profile: profile)
   end
 
-  # def show_by_email(conn, email) do
-  #   profile = Accounts.get_profile_by_user_email(email)
-  #   render(conn, "show_by_email.json", profile: profile, email: email)
-  # end
-
   def show_me(conn, _params) do
     user = conn.assigns.current_user
     profile = Accounts.get_profile_by_user_id(user.id)

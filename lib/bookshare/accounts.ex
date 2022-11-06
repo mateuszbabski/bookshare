@@ -35,11 +35,8 @@ defmodule Bookshare.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_profile!(id), do: Repo.get!(Profile, id)
-
-  # def get_profile_by_user_email(email) do
-  #   Bookshare.Auth.get_user_by_email(email)
-  # end
+  #def get_profile!(id), do: Repo.get!(Profile, id)
+  def get_profile!(id), do: Repo.get!(Profile, id) |> Repo.preload(:user)
 
   @doc """
   Gets profile by user_id.
@@ -57,7 +54,7 @@ defmodule Bookshare.Accounts do
   """
 
   def get_profile_by_user_id(user_id) do
-    Repo.get_by(Profile, [user_id: user_id])
+    Repo.get_by(Profile, [user_id: user_id]) |> Repo.preload(:user)
   end
 
   @doc """

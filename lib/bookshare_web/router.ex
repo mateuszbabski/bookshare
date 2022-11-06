@@ -25,7 +25,6 @@ defmodule BookshareWeb.Router do
 
     get "/all", ProfileController, :index
     get "/:id", ProfileController, :show
-    #get "/email", ProfileController, :show_by_email
   end
 
   scope "/api", BookshareWeb do
