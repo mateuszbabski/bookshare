@@ -51,11 +51,13 @@ defmodule BookshareWeb.ProfileControllerTest do
 
       conn = post(conn, Routes.profile_path(conn, :create), @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
+      assert json_response(conn, 422)["errors"]["username"] == ["can't be blank"]
     end
 
     test "renders errors when user is unauthorized", %{conn: conn} do
       conn = post(conn, Routes.profile_path(conn, :create), @invalid_attrs)
       assert json_response(conn, 401)["errors"] != %{}
+      assert json_response(conn, 401)["errors"]["detail"] == "Unauthorized"
     end
   end
 
