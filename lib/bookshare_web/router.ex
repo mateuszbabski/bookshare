@@ -27,19 +27,35 @@ defmodule BookshareWeb.Router do
     get "/:id", ProfileController, :show
   end
 
-  scope "/api", BookshareWeb do
-    pipe_through :api
+  scope "/api/auth", BookshareWeb do
+    pipe_through [:api, :protected]
 
-    get "/auth", AuthController, :index
-    patch "/auth", AuthController, :update
-    post "/auth/login", AuthController, :login
-    post "/auth/register", AuthController, :register
-    post "/auth/confirm", AuthController, :confirm_email
-    post "/auth/forgot_password", AuthController, :forgot_password
-    post "/auth/reset_password", AuthController, :reset_password
-    delete "/auth/logout", AuthController, :logout
+    get "/", AuthController, :index
+    patch "/", AuthController, :update
+    delete "/logout", AuthController, :logout
   end
 
+  scope "/api/auth", BookshareWeb do
+    pipe_through :api
+
+    post "/login", AuthController, :login
+    post "/register", AuthController, :register
+    post "/confirm", AuthController, :confirm_email
+    post "/forgot_password", AuthController, :forgot_password
+    post "/reset_password", AuthController, :reset_password
+  end
+
+  scope "/api/books", BookshareWeb do
+    pipe_through :api
+
+    resources "/books", BookController, except: [:new, :edit]
+  end
+
+    scope "/api/books", BookshareWeb do
+    pipe_through [:api, :protected]
+
+    #resources "/books", BookController, except: [:new, :edit]
+  end
 
 
   # Enables LiveDashboard only for development
