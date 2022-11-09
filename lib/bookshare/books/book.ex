@@ -3,8 +3,6 @@ defmodule Bookshare.Books.Book do
   import Ecto.Changeset
 
   schema "books" do
-    #field :authors, {:array, :string}
-    #field :category, {:array, :string}
     field :title, :string
     field :description, :string
     field :published, :integer
@@ -16,7 +14,7 @@ defmodule Bookshare.Books.Book do
 
     belongs_to :user, Bookshare.Accounts.User, foreign_key: :user_id
     many_to_many :categories, Bookshare.Books.Category, join_through: "books_categories", on_replace: :delete
-    many_to_many :authors, Bookshare.Books.Authors, join_through: "books_authors", on_replace: :delete
+    many_to_many :authors, Bookshare.Books.Author, join_through: "books_authors", on_replace: :delete
 
     timestamps()
   end
@@ -24,10 +22,10 @@ defmodule Bookshare.Books.Book do
   @doc false
   def changeset(book, attrs) do
     book
-    |> cast(attrs, [:title, :description, :published, :isbn, :available, :price])
+    |> cast(attrs, [:title, :description, :published, :isbn, :is_available, :to_borrow, :to_sale, :price])
     |> cast_assoc(:categories)
     |> cast_assoc(:authors)
-    |> validate_required([:title, :description, :published, :isbn, :available])
+    |> validate_required([:title, :description, :published, :isbn, :is_available])
     |> unique_constraint(:isbn)
   end
 end
