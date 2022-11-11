@@ -5,7 +5,7 @@ defmodule Bookshare.Books.Author do
   schema "authors" do
     field :name, :string
 
-    many_to_many :books, Bookshare.Books.Book, join_through: "books_authors", on_replace: :delete
+    many_to_many :books, Bookshare.Books.Book, join_through: "books_authors"
 
     timestamps()
   end

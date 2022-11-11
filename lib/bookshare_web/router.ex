@@ -48,10 +48,18 @@ defmodule BookshareWeb.Router do
   scope "/api/books", BookshareWeb do
     pipe_through :api
 
-
+    post "/create", BookController, :create
   end
 
-    scope "/api/books", BookshareWeb do
+  scope "/api/author", BookshareWeb do
+    pipe_through :api
+
+    get "/", AuthorController, :index
+    get "/:id", AuthorController, :show
+    post "/add", AuthorController, :create_author
+  end
+
+  scope "/api/books", BookshareWeb do
     pipe_through [:api, :protected]
 
     #resources "/books", BookController, except: [:new, :edit]

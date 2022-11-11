@@ -23,9 +23,9 @@ defmodule Bookshare.Books.Book do
   def changeset(book, attrs) do
     book
     |> cast(attrs, [:title, :description, :published, :isbn, :is_available, :to_borrow, :to_sale, :price])
-    |> cast_assoc(:categories)
+    #|> cast_assoc(:categories)
     |> cast_assoc(:authors)
-    |> validate_required([:title, :description, :published, :isbn, :is_available])
+    |> validate_required([:title, :description, :published, :isbn])
     |> unique_constraint(:isbn)
   end
 end

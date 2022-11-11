@@ -5,7 +5,7 @@ defmodule Bookshare.Books.Category do
   schema "categories" do
     field :name, :string
 
-    many_to_many :books, Bookshare.Books.Book, join_through: "books_categories", on_replace: :delete
+    many_to_many :books, Bookshare.Books.Book, join_through: "books_categories"
 
     timestamps()
   end
