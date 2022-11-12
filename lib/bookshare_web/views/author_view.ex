@@ -7,7 +7,8 @@ defmodule BookshareWeb.AuthorView do
   end
 
   def render("show.json", %{author: author}) do
-    books = render_many(author.books, BookshareWeb.BookView, "book.json")
+    #books = render_many(author.books, BookshareWeb.BookView, "book.json")
+    books = render_many(author.books, BookshareWeb.BookView, "authors_books.json")
 
     %{
       author_id: author.id,
@@ -18,14 +19,6 @@ defmodule BookshareWeb.AuthorView do
 
   def render("author.json", %{author: author}) do
     %{
-      id: author.id,
-      name: author.name
-    }
-  end
-
-  def render("created.json", %{author: author}) do
-    %{
-      message: "Author created",
       id: author.id,
       name: author.name
     }

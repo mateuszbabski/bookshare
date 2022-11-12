@@ -3,7 +3,7 @@ defmodule Bookshare.Repo.Migrations.CreateCategory do
 
   def change do
     create table(:categories) do
-      add :name, :string
+      add :name, :citext, null: false
 
       timestamps()
     end

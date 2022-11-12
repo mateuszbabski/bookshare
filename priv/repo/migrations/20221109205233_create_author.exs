@@ -3,7 +3,7 @@ defmodule Bookshare.Repo.Migrations.CreateAuthor do
 
   def change do
     create table(:authors) do
-      add :name, :string
+      add :name, :citext, null: false
 
       timestamps()
     end

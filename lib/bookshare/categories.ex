@@ -14,5 +14,10 @@ defmodule Bookshare.Categories do
 
   def get_category(id), do: Repo.get(Category, id) |> Repo.preload(:books)
 
-  def get_category_by_name(name), do: Repo.all(from c in Category, where: c.name == ^name)
+  def get_category_by_name(name), do: Repo.get_by(Category, name: name) |> Repo.preload(:books)
+
+  def all_books_by_category(category) do
+    Ecto.assoc(category, :books)
+    |> Repo.all()
+  end
 end

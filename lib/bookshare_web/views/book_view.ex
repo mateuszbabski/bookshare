@@ -11,10 +11,55 @@ defmodule BookshareWeb.BookView do
   end
 
   def render("book.json", %{book: book}) do
+    #authors = render_many(book.authors, BookshareWeb.AuthorView, "author.json")
+    #categories = render_many(book.categories, BookshareWeb.CategoryView, "category.json")
+
     %{
       id: book.id,
       title: book.title,
-      isbn: book.isbn
+      description: book.description,
+      isbn: book.isbn,
+      published: book.published,
+      is_available: book.is_available,
+      to_borrow: book.to_borrow,
+      to_sale: book.to_sale,
+      price: book.price
+      #authors: authors
+      #categories: categories
+    }
+  end
+
+  def render("authors_books.json", %{book: book}) do
+    #categories = render_many(book.categories, BookshareWeb.CategoryView, "category.json")
+
+    %{
+      id: book.id,
+      title: book.title,
+      description: book.description,
+      isbn: book.isbn,
+      published: book.published,
+      is_available: book.is_available,
+      to_borrow: book.to_borrow,
+      to_sale: book.to_sale,
+      price: book.price
+      #categories: categories
+    }
+  end
+
+  def render("category_books.json", %{book: book}) do
+    #authors = render_many(book.authors, BookshareWeb.AuthorView, "author.json")
+
+    %{
+      id: book.id,
+      title: book.title,
+      description: book.description,
+      isbn: book.isbn,
+      published: book.published,
+      is_available: book.is_available,
+      to_borrow: book.to_borrow,
+      to_sale: book.to_sale,
+      price: book.price
+      #authors: authors
     }
   end
 end
