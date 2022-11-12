@@ -14,11 +14,5 @@ defmodule Bookshare.Categories do
 
   def get_category(id), do: Repo.get(Category, id) |> Repo.preload(:books)
 
-  def get_category_by_name(name), do: Repo.get_by(Category, [name: name])
-
-  def add_category(%{"categories" => _categories} = attrs) do
-    %Category{}
-    |> Category.changeset(attrs)
-    |> Repo.insert()
-  end
+  def get_category_by_name(name), do: Repo.all(from c in Category, where: c.name == ^name)
 end

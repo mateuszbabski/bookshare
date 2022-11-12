@@ -115,7 +115,7 @@ defmodule Bookshare.Books do
       |> Ecto.Changeset.put_assoc(:authors, authors)
     else
       {:ok, %Author{} = authors} = Repo.insert(%Author{name: authors}, returning: true)
-      authors = Repo.all(from a in Author, where: a.name == ^authors.name)
+      authors = Repo.all(from a in Author, where: a.id == ^authors.id)
       book
       |> Ecto.Changeset.change()
       |> Ecto.Changeset.put_assoc(:authors, authors)
