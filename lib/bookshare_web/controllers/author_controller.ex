@@ -20,7 +20,7 @@ defmodule BookshareWeb.AuthorController do
     end
   end
 
-  def create_author(conn, %{"author" => author}) do
+  def create_author(conn, author) do
     with {:ok, author} <- Authors.add_author(author) do
       conn
       |> put_status(:created)

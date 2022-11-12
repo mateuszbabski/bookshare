@@ -133,20 +133,18 @@ defmodule Bookshare.Books do
   end
 
   defp load_authors_assoc(book, %{"authors" => authors} = attrs) do
-    if authors = Repo.all(from a in Author, where: a.name == ^authors) do
-       book
-       |> Ecto.Changeset.change()
-       |> Ecto.Changeset.put_assoc(:authors, authors)
+    if Repo.exists?(from a in Author, where: a.name == ^attrs["authors"]) do
+      authors = Repo.all(from a in Author, where: a.name == ^authors)
+      book
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:authors, authors)
     else
-       Repo.insert!(%Author{name: authors})
-       book
-        |> Ecto.Changeset.change()
-        |> Ecto.Changeset.put_assoc(:authors, authors)
+      {:ok, %Author{} = authors} = Repo.insert(%Author{name: authors}, returning: true)
+      authors = Repo.all(from a in Author, where: a.name == ^authors.name)
+      book
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:authors, authors)
     end
-          # authors = Repo.all(from a in Author, where: a.name == ^authors)
-          # book
-          # |> Ecto.Changeset.change()
-          # |> Ecto.Changeset.put_assoc(:authors, authors)
   end
 
   defp load_categories_assoc(book, %{"categories" => categories} = _attrs) do
