@@ -19,15 +19,4 @@ defmodule BookshareWeb.AuthorController do
       |> json(%{message: "Author not found"})
     end
   end
-
-  def create_author(conn, author) do
-    with {:ok, author} <- Authors.add_author(author) do
-      conn
-      |> put_status(:created)
-      |> render("created.json", author: author)
-    else
-      {:error, changeset} ->
-        {:error, changeset}
-    end
-  end
 end
