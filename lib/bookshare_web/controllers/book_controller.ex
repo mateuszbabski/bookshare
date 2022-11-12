@@ -6,10 +6,10 @@ defmodule BookshareWeb.BookController do
 
   action_fallback BookshareWeb.FallbackController
 
-  # def index(conn, _params) do
-  #   books = Books.list_books()
-  #   render(conn, "index.json", books: books)
-  # end
+  def index(conn, _params) do
+    books = Books.list_books()
+    render(conn, "index.json", books: books)
+  end
 
   def create(conn, %{"book" => book_params}) do
     user = conn.assigns.current_user
@@ -21,24 +21,36 @@ defmodule BookshareWeb.BookController do
     end
   end
 
-  # def show(conn, %{"id" => id}) do
-  #   book = Books.get_book!(id)
-  #   render(conn, "show.json", book: book)
-  # end
+  def show(conn, %{"id" => id}) do
+    if book = Books.get_book(id) do
+      render(conn, "show.json", book: book)
+    else
+      conn
+      |> put_status(:not_found)
+      |> json(%{message: "Book not found"})
+    end
+  end
 
-  # def update(conn, %{"id" => id, "book" => book_params}) do
-  #   book = Books.get_book!(id)
+  def update(conn, %{"id" => id, "book" => book_params}) do
+    user = conn.assigns.current_user
+    book = Books.get_book!(id)
+    with  true                   <- book.user_id == user.id,
+          {:ok, %Book{} = book} <- Books.update_book(book, book_params) do
+            render(conn, "show.json", book: book)
+    else
+      {:error, changeset} -> {:error, changeset}
 
-  #   with {:ok, %Book{} = book} <- Books.update_book(book, book_params) do
-  #     render(conn, "show.json", book: book)
-  #   end
-  # end
+      false -> json(conn, %{message: "User does not have book yet"})
+    end
+  end
 
-  # def delete(conn, %{"id" => id}) do
-  #   book = Books.get_book!(id)
+  def delete(conn, %{"id" => id}) do
+    user = conn.assigns.current_user
+    book = Books.get_book!(id)
 
-  #   with {:ok, %Book{}} <- Books.delete_book(book) do
-  #     send_resp(conn, :no_content, "")
-  #   end
-  # end
+    with  true           <- book.user_id == user.id,
+          {:ok, %Book{}} <- Books.delete_book(book) do
+            render(conn, "deleted.json")
+    end
+  end
 end

@@ -10,9 +10,13 @@ defmodule BookshareWeb.BookView do
     %{data: render_one(book, BookView, "book.json")}
   end
 
+  def render("deleted.json", _params) do
+    %{message: "Book deleted"}
+  end
+
   def render("book.json", %{book: book}) do
-    #authors = render_many(book.authors, BookshareWeb.AuthorView, "author.json")
-    #categories = render_many(book.categories, BookshareWeb.CategoryView, "category.json")
+    authors = render_many(book.authors, BookshareWeb.AuthorView, "author.json")
+    categories = render_many(book.categories, BookshareWeb.CategoryView, "category.json")
 
     %{
       id: book.id,
@@ -23,9 +27,9 @@ defmodule BookshareWeb.BookView do
       is_available: book.is_available,
       to_borrow: book.to_borrow,
       to_sale: book.to_sale,
-      price: book.price
-      #authors: authors
-      #categories: categories
+      price: book.price,
+      authors: authors,
+      categories: categories
     }
   end
 

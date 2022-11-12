@@ -7,7 +7,6 @@ defmodule BookshareWeb.AuthorView do
   end
 
   def render("show.json", %{author: author}) do
-    #books = render_many(author.books, BookshareWeb.BookView, "book.json")
     books = render_many(author.books, BookshareWeb.BookView, "authors_books.json")
 
     %{

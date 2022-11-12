@@ -7,7 +7,7 @@ defmodule BookshareWeb.CategoryView do
   end
 
   def render("show.json", %{category: category}) do
-    books = render_many(category.books, BookshareWeb.BookView, "book.json")
+    books = render_many(category.books, BookshareWeb.BookView, "category_books.json")
 
     %{
       category_id: category.id,

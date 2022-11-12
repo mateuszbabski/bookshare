@@ -37,17 +37,23 @@ defmodule Bookshare.Books do
       ** (Ecto.NoResultsError)
 
   """
+  def get_book(id), do: Repo.get(Book, id) |> Repo.preload([:authors, :categories])
+
   def get_book!(id), do: Repo.get!(Book, id) |> Repo.preload([:authors, :categories])
+
+  def get_book_by_user_id(user_id) do
+    Repo.get_by(Book, [user_id: user_id]) |> Repo.preload(:user)
+  end
 
   @doc """
   Creates a book.
 
   ## Examples
 
-      iex> create_book(%{field: value})
+      iex> create_book(user, %{field: value})
       {:ok, %Book{}}
 
-      iex> create_book(%{field: bad_value})
+      iex> create_book(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
@@ -56,7 +62,7 @@ defmodule Bookshare.Books do
     |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))
     |> Ecto.Changeset.put_assoc(:user, user)
     |> load_authors_assoc(attrs)
-    #|> load_categories_assoc(attrs)
+    |> load_categories_assoc(attrs)
     |> Repo.insert()
   end
 
@@ -65,19 +71,26 @@ defmodule Bookshare.Books do
 
   ## Examples
 
-      iex> update_book(book, %{field: new_value})
+      iex> update_book(user, book, %{field: new_value})
       {:ok, %Book{}}
 
-      iex> update_book(book, %{field: bad_value})
+      iex> update_book(user, book, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
+  def update_book(%Book{} = book, %{"authors" => _authors, "categories" => _categories} = attrs) do
+    book
+    |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))
+    |> load_authors_assoc(attrs)
+    |> load_categories_assoc(attrs)
+    |> Repo.update()
+  end
+
   def update_book(%Book{} = book, attrs) do
     book
     |> Book.changeset(attrs)
     |> Repo.update()
   end
-
   @doc """
   Deletes a book.
 
@@ -127,7 +140,11 @@ defmodule Bookshare.Books do
     |> Ecto.Changeset.put_assoc(:authors, authors)
   end
 
-  # defp load_categories_assoc(book, %{"categories" => categories} = _attrs) do
-
-  # end
+  defp load_categories_assoc(book, %{"categories" => categories} = _attrs) do
+    Repo.insert_all("categories", [[name: categories, inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()]], on_conflict: :nothing)
+    categories = Repo.all(from c in Category, where: c.name == ^categories)
+    book
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:categories, categories)
+  end
 end

@@ -48,7 +48,16 @@ defmodule BookshareWeb.Router do
   scope "/api/books", BookshareWeb do
     pipe_through :api
 
+    get "/", BookController, :index
+    get "/:id", BookController, :show
+  end
+
+  scope "/api/books", BookshareWeb do
+    pipe_through [:api, :protected]
+
     post "/create", BookController, :create
+    patch "/update/:id", BookController, :update
+    delete "/delete/:id", BookController, :delete
   end
 
   scope "/api/author", BookshareWeb do
@@ -59,11 +68,14 @@ defmodule BookshareWeb.Router do
     post "/add", AuthorController, :create_author
   end
 
-  scope "/api/books", BookshareWeb do
-    pipe_through [:api, :protected]
+    scope "/api/category", BookshareWeb do
+    pipe_through :api
 
-    #resources "/books", BookController, except: [:new, :edit]
+    get "/", CategoryController, :index
+    get "/:id", CategoryController, :show
+    post "/add", CategoryController, :create_category
   end
+
 
 
   # Enables LiveDashboard only for development
