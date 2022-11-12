@@ -28,4 +28,5 @@ defmodule Bookshare.Books.Book do
     |> validate_required([:title, :description, :published, :isbn])
     |> unique_constraint(:isbn)
   end
+
 end

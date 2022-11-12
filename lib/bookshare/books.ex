@@ -71,10 +71,10 @@ defmodule Bookshare.Books do
 
   ## Examples
 
-      iex> update_book(user, book, %{field: new_value})
+      iex> update_book(book, %{field: new_value})
       {:ok, %Book{}}
 
-      iex> update_book(user, book, %{field: bad_value})
+      iex> update_book(book, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
@@ -91,6 +91,7 @@ defmodule Bookshare.Books do
     |> Book.changeset(attrs)
     |> Repo.update()
   end
+
   @doc """
   Deletes a book.
 
@@ -121,18 +122,6 @@ defmodule Bookshare.Books do
   end
 
   defp load_authors_assoc(book, %{"authors" => authors} = _attrs) do
-    # if Repo.exists?(from a in Author, where: a.name == ^attrs["authors"]) do
-    #   authors = Repo.all(from a in Author, where: a.name == ^authors)
-    #   book
-    #   |> Ecto.Changeset.change()
-    #   |> Ecto.Changeset.put_assoc(:authors, authors)
-    # else
-    #   {:ok, %Author{} = authors} = Repo.insert(%Author{name: authors}, returning: true)
-    #   authors = Repo.all(from a in Author, where: a.id == ^authors.id)
-    #   book
-    #   |> Ecto.Changeset.change()
-    #   |> Ecto.Changeset.put_assoc(:authors, authors)
-    # end
     Repo.insert_all("authors", [[name: authors, inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()]], on_conflict: :nothing)
     authors = Repo.all(from a in Author, where: a.name == ^authors)
     book

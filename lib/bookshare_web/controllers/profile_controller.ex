@@ -23,9 +23,13 @@ defmodule BookshareWeb.ProfileController do
 
   def show_me(conn, _params) do
     user = conn.assigns.current_user
-    profile = Accounts.get_profile_by_user_id(user.id)
-
-    render(conn, "show_me.json", profile: profile)
+    if profile = Accounts.get_profile_by_user_id(user.id) do
+      render(conn, "show_me.json", profile: profile)
+    else
+      conn
+      |> put_status(:not_found)
+      |> json(%{message: "Profile not found"})
+    end
   end
 
   def create(conn, profile_params) do

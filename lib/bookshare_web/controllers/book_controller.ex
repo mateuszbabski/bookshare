@@ -34,7 +34,8 @@ defmodule BookshareWeb.BookController do
   def update(conn, %{"id" => id, "book" => book_params}) do
     user = conn.assigns.current_user
     book = Books.get_book!(id)
-    with  true                   <- book.user_id == user.id,
+
+    with  true                  <- book.user_id == user.id,
           {:ok, %Book{} = book} <- Books.update_book(book, book_params) do
             render(conn, "show.json", book: book)
     else
