@@ -51,7 +51,7 @@ defmodule Bookshare.Books do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_book(user, %{"authors" => authors, "categories" => categories} = attrs) do
+  def create_book(user, %{"authors" => _authors, "categories" => _categories} = attrs) do
     %Book{}
     |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))
     |> Ecto.Changeset.put_assoc(:user, user)
@@ -107,31 +107,6 @@ defmodule Bookshare.Books do
     Book.changeset(book, attrs)
   end
 
-    @spec load_assoc(
-            {map, map}
-            | %{
-                :__struct__ => atom | %{:__changeset__ => any, optional(any) => any},
-                optional(atom) => any
-              },
-            nil | maybe_improper_list | map
-          ) :: Ecto.Changeset.t()
-  @doc """
-  Returns an `%Book{}` with authors and categories associated.
-  ## Examples
-      iex> load_assoc(book, attrs)
-      %Book{}
-  """
-  def load_assoc(book, attrs) do
-    authors = Repo.all(from a in Author, where: a.name in ^attrs["authors"])
-    categories = Repo.all(from c in Category, where: c.name in ^attrs["categories"])
-    # if author/category doesnt exist in db, create it
-
-    book
-    |> Ecto.Changeset.change()
-    |> Ecto.Changeset.put_assoc(:authors, authors)
-    |> Ecto.Changeset.put_assoc(:categories, categories)
-  end
-
   defp load_authors_assoc(book, %{"authors" => authors} = attrs) do
     if Repo.exists?(from a in Author, where: a.name == ^attrs["authors"]) do
       authors = Repo.all(from a in Author, where: a.name == ^authors)
@@ -147,17 +122,7 @@ defmodule Bookshare.Books do
     end
   end
 
-  defp load_categories_assoc(book, %{"categories" => categories} = _attrs) do
-    if Bookshare.Categories.get_category_by_name(categories) == nil do
-          Bookshare.Categories.add_category(%{"categories" => categories})
+  # defp load_categories_assoc(book, %{"categories" => categories} = _attrs) do
 
-    end
-    #       book
-    #       |> Ecto.Changeset.change()
-    #       |> Ecto.Changeset.put_assoc(:categories, categories)
-    # else
-          book
-          |> Ecto.Changeset.change()
-          |> Ecto.Changeset.put_assoc(:categories, categories)
-  end
+  # end
 end

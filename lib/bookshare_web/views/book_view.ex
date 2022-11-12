@@ -12,7 +12,9 @@ defmodule BookshareWeb.BookView do
 
   def render("book.json", %{book: book}) do
     %{
-      id: book.id
+      id: book.id,
+      title: book.title,
+      isbn: book.isbn
     }
   end
 end
