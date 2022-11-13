@@ -20,7 +20,7 @@ defmodule Bookshare.Books do
 
   """
   def list_books do
-    Repo.all(Book) |> Repo.preload([:authors, :categories])
+    Repo.all(Book) |> Repo.preload([:user, :authors, :categories])
   end
 
   @doc """
@@ -37,9 +37,9 @@ defmodule Bookshare.Books do
       ** (Ecto.NoResultsError)
 
   """
-  def get_book(id), do: Repo.get(Book, id) |> Repo.preload([:authors, :categories])
+  def get_book(id), do: Repo.get(Book, id) |> Repo.preload([:user, :authors, :categories])
 
-  def get_book!(id), do: Repo.get!(Book, id) |> Repo.preload([:authors, :categories])
+  def get_book!(id), do: Repo.get!(Book, id) |> Repo.preload([:user, :authors, :categories])
 
   def get_book_by_user_id(user_id) do
     Repo.get_by(Book, [user_id: user_id]) |> Repo.preload(:user)
@@ -57,6 +57,7 @@ defmodule Bookshare.Books do
       {:error, %Ecto.Changeset{}}
 
   """
+
   def create_book(user, %{"authors" => _authors, "categories" => _categories} = attrs) do
     %Book{}
     |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))

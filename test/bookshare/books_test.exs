@@ -2,56 +2,56 @@ defmodule Bookshare.BooksTest do
   use Bookshare.DataCase
 
   alias Bookshare.Books
+  alias Bookshare.Books.Book
+  alias Bookshare.BooksFixtures
+  alias Bookshare.AccountsFixtures
 
-  describe "books" do
-    alias Bookshare.Books.Book
+    describe "books" do
 
-    import Bookshare.BooksFixtures
-
+    @valid_attrs %{
+                    "title" => "Book 1",
+                    "description" => "Book description",
+                    "isbn" => "111-111-111",
+                    "published" => 2000,
+                    "authors" => "author",
+                    "categories" => "category"
+                  }
     @invalid_attrs %{}
+    @update_attrs %{"title" => "Updated Book 1", "description" => "Updated Book description"}
 
-    test "list_books/0 returns all books" do
-      book = book_fixture()
+    setup do
+      %{user: AccountsFixtures.user_fixture()}
+    end
+
+    test "list books/0 returns all books", %{user: user} do
+      book = BooksFixtures.book_fixture(user, @valid_attrs)
       assert Books.list_books() == [book]
     end
 
-    test "get_book!/1 returns the book with given id" do
-      book = book_fixture()
+    test "get_book!/1 returns the book with given id", %{user: user} do
+      book = BooksFixtures.book_fixture(user, @valid_attrs)
       assert Books.get_book!(book.id) == book
     end
 
-    test "create_book/1 with valid data creates a book" do
-      valid_attrs = %{}
-
-      assert {:ok, %Book{} = book} = Books.create_book(valid_attrs)
+    test "get_book/1 returns the book with given id", %{user: user} do
+      book = BooksFixtures.book_fixture(user, @valid_attrs)
+      assert Books.get_book(book.id) == book
     end
 
-    test "create_book/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Books.create_book(@invalid_attrs)
+    test "get_book/1 refute with invalid id" do
+      refute Books.get_book(1)
     end
 
-    test "update_book/2 with valid data updates the book" do
-      book = book_fixture()
-      update_attrs = %{}
-
-      assert {:ok, %Book{} = book} = Books.update_book(book, update_attrs)
+    test "create_book/2 with valid params", %{user: user} do
+      book = BooksFixtures.book_fixture(user, @valid_attrs)
+      assert book.title == "Book 1"
+      assert book.description == "Book description"
+      assert book.published == 2000
+      assert book.isbn == "111-111-111"
     end
 
-    test "update_book/2 with invalid data returns error changeset" do
-      book = book_fixture()
-      assert {:error, %Ecto.Changeset{}} = Books.update_book(book, @invalid_attrs)
-      assert book == Books.get_book!(book.id)
-    end
-
-    test "delete_book/1 deletes the book" do
-      book = book_fixture()
-      assert {:ok, %Book{}} = Books.delete_book(book)
-      assert_raise Ecto.NoResultsError, fn -> Books.get_book!(book.id) end
-    end
-
-    test "change_book/1 returns a book changeset" do
-      book = book_fixture()
-      assert %Ecto.Changeset{} = Books.change_book(book)
+    test "create_book/2 with invalid params", %{user: user} do
+      #assert {:error, %Ecto.Changeset{}} = BooksFixtures.book_fixture(user, @invalid_attrs)
     end
   end
 end
