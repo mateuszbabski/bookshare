@@ -25,17 +25,19 @@ defmodule Bookshare.BooksTest do
 
     test "list books/0 returns all books", %{user: user} do
       book = BooksFixtures.book_fixture(user, @valid_attrs)
-      assert Books.list_books() == [book]
+      assert Books.list_books()
     end
 
     test "get_book!/1 returns the book with given id", %{user: user} do
       book = BooksFixtures.book_fixture(user, @valid_attrs)
-      assert Books.get_book!(book.id) == book
+      assert Books.get_book!(book.id)
+      assert book.title == "Book 1"
     end
 
     test "get_book/1 returns the book with given id", %{user: user} do
       book = BooksFixtures.book_fixture(user, @valid_attrs)
-      assert Books.get_book(book.id) == book
+      assert Books.get_book(book.id)
+      assert book.title == "Book 1"
     end
 
     test "get_book/1 refute with invalid id" do

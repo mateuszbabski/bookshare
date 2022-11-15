@@ -21,7 +21,7 @@ defmodule Bookshare.Books do
 
   """
   def list_books do
-    Repo.all(Book) |> Repo.preload([:user, :authors, :categories])
+    Repo.all(Book) |> Repo.preload([:authors, :categories])
   end
 
   @doc """
@@ -38,9 +38,9 @@ defmodule Bookshare.Books do
       ** (Ecto.NoResultsError)
 
   """
-  def get_book(id), do: Repo.get(Book, id) |> Repo.preload([:user, :authors, :categories])
+  def get_book(id), do: Repo.get(Book, id) |> Repo.preload([:authors, :categories])
 
-  def get_book!(id), do: Repo.get!(Book, id) |> Repo.preload([:user, :authors, :categories])
+  def get_book!(id), do: Repo.get!(Book, id) |> Repo.preload([:authors, :categories])
 
   def get_book_by_user_id(user_id) do
     Repo.get_by(Book, [user_id: user_id]) |> Repo.preload(:user)
