@@ -17,7 +17,7 @@ defmodule BookshareWeb.BookController do
     with {:ok, %Book{} = _book} <- Books.create_book(user, book_params) do
       conn
       |> put_status(:created)
-      |> json(%{message: "created"})
+      |> json(%{message: "Book created"})
     end
   end
 
@@ -51,7 +51,9 @@ defmodule BookshareWeb.BookController do
 
     with  true           <- book.user_id == user.id,
           {:ok, %Book{}} <- Books.delete_book(book) do
-            render(conn, "deleted.json")
+            conn
+            |> put_status(:no_content)
+            |> render("deleted.json")
     end
   end
 end
