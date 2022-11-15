@@ -81,7 +81,6 @@ defmodule Bookshare.Books do
         |> Ecto.Changeset.put_assoc(:categories, categories)
       end)
       |> Repo.transaction()
-      |> IO.inspect()
 
       case multi_result do
         {:ok, %{book: book}} -> {:ok, book}
@@ -89,7 +88,7 @@ defmodule Bookshare.Books do
       end
   end
 
-  defp parse_inputs([]), do: nil
+  defp parse_inputs(nil), do: []
 
   defp parse_inputs(inputs) do
     now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
@@ -134,18 +133,23 @@ defmodule Bookshare.Books do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_book(%Book{} = book, %{"authors" => _authors, "categories" => _categories} = attrs) do
-    book
-    |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))
-    |> load_authors_assoc(attrs)
-    |> load_categories_assoc(attrs)
-    |> Repo.update()
-  end
-
   def update_book(%Book{} = book, attrs) do
-    book
-    |> Book.changeset(attrs)
-    |> Repo.update()
+    multi_result =
+      Multi.new()
+      |> ensure_authors(attrs)
+      |> ensure_categories(attrs)
+      |> Multi.update(:book, fn %{authors: authors, categories: categories} ->
+        book
+        |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))
+        |> Ecto.Changeset.put_assoc(:authors, authors)
+        |> Ecto.Changeset.put_assoc(:categories, categories)
+      end)
+      |> Repo.transaction()
+
+    case multi_result do
+      {:ok, %{book: book}} -> {:ok, book}
+      {:error, :book, changeset, _} -> {:error, changeset}
+    end
   end
 
   @doc """
@@ -177,19 +181,19 @@ defmodule Bookshare.Books do
     Book.changeset(book, attrs)
   end
 
-  defp load_authors_assoc(book, %{"authors" => authors} = _attrs) do
-    Repo.insert_all("authors", [[name: authors, inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()]], on_conflict: :nothing)
-    authors = Repo.all(from a in Author, where: a.name == ^authors)
-    book
-    |> Ecto.Changeset.change()
-    |> Ecto.Changeset.put_assoc(:authors, authors)
-  end
+  # defp load_authors_assoc(book, %{"authors" => authors} = _attrs) do
+  #   Repo.insert_all("authors", [[name: authors, inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()]], on_conflict: :nothing)
+  #   authors = Repo.all(from a in Author, where: a.name == ^authors)
+  #   book
+  #   |> Ecto.Changeset.change()
+  #   |> Ecto.Changeset.put_assoc(:authors, authors)
+  # end
 
-  defp load_categories_assoc(book, %{"categories" => categories} = _attrs) do
-    Repo.insert_all("categories", [[name: categories, inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()]], on_conflict: :nothing)
-    categories = Repo.all(from c in Category, where: c.name == ^categories)
-    book
-    |> Ecto.Changeset.change()
-    |> Ecto.Changeset.put_assoc(:categories, categories)
-  end
+  # defp load_categories_assoc(book, %{"categories" => categories} = _attrs) do
+  #   Repo.insert_all("categories", [[name: categories, inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()]], on_conflict: :nothing)
+  #   categories = Repo.all(from c in Category, where: c.name == ^categories)
+  #   book
+  #   |> Ecto.Changeset.change()
+  #   |> Ecto.Changeset.put_assoc(:categories, categories)
+  # end
 end
