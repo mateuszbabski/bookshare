@@ -4,6 +4,7 @@ defmodule Bookshare.Books do
   """
 
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Bookshare.Repo
 
   alias Bookshare.Books.Book
@@ -58,13 +59,67 @@ defmodule Bookshare.Books do
 
   """
 
-  def create_book(user, %{"authors" => _authors, "categories" => _categories} = attrs) do
-    %Book{}
-    |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))
-    |> Ecto.Changeset.put_assoc(:user, user)
-    |> load_authors_assoc(attrs)
-    |> load_categories_assoc(attrs)
-    |> Repo.insert()
+  # def create_book(user, %{"authors" => _authors, "categories" => _categories} = attrs) do
+  #   %Book{}
+  #   |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))
+  #   |> Ecto.Changeset.put_assoc(:user, user)
+  #   |> load_authors_assoc(attrs)
+  #   |> load_categories_assoc(attrs)
+  #   |> Repo.insert()
+  # end
+
+  def create_book(user, attrs \\ %{}) do
+    multi_result =
+      Multi.new()
+      |> ensure_authors(attrs)
+      |> ensure_categories(attrs)
+      |> Multi.insert(:book, fn %{authors: authors, categories: categories} ->
+        %Book{}
+        |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))
+        |> Ecto.Changeset.put_assoc(:user, user)
+        |> Ecto.Changeset.put_assoc(:authors, authors)
+        |> Ecto.Changeset.put_assoc(:categories, categories)
+      end)
+      |> Repo.transaction()
+      |> IO.inspect()
+
+      case multi_result do
+        {:ok, %{book: book}} -> {:ok, book}
+        {:error, :book, changeset, _} -> {:error, changeset}
+      end
+  end
+
+  defp parse_inputs([]), do: nil
+
+  defp parse_inputs(inputs) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    for input <- String.split(inputs, ","),
+        input = input |> String.trim(),
+        input != "",
+        do: %{name: input, inserted_at: now, updated_at: now}
+  end
+
+  defp ensure_authors(multi, attrs) do
+    authors = parse_inputs(attrs["authors"])
+
+    multi
+    |> Multi.insert_all(:insert_authors, Author, authors, on_conflict: :nothing)
+    |> Multi.run(:authors, fn repo, _changes ->
+      author_names = for a <- authors, do: a.name
+      {:ok, repo.all(from a in Author, where: a.name in ^author_names)}
+    end)
+  end
+
+  defp ensure_categories(multi, attrs) do
+    categories = parse_inputs(attrs["categories"])
+
+    multi
+    |> Multi.insert_all(:insert_categories, Category, categories, on_conflict: :nothing)
+    |> Multi.run(:categories, fn repo, _changes ->
+      category_names = for c <- categories, do: c.name
+      {:ok, repo.all(from c in Category, where: c.name in ^category_names)}
+    end)
   end
 
   @doc """
