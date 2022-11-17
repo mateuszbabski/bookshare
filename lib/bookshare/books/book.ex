@@ -26,7 +26,19 @@ defmodule Bookshare.Books.Book do
     |> cast_assoc(:categories)
     |> cast_assoc(:authors)
     |> validate_required([:title, :description, :published, :isbn])
+    |> validate_price()
     |> unique_constraint(:isbn)
   end
 
+  defp validate_price(changeset) do
+    case get_field(changeset, :to_sale) do
+      true ->
+        changeset
+        |> validate_required(:price, message: "Price has to be greater than 0")
+        |> validate_number(:price, greater_than: 0)
+
+      false ->
+        changeset
+    end
+  end
 end
