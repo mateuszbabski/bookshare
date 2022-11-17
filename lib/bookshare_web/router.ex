@@ -65,7 +65,6 @@ defmodule BookshareWeb.Router do
 
     get "/", AuthorController, :index
     get "/:id", AuthorController, :show
-    post "/add", AuthorController, :create_author
   end
 
     scope "/api/category", BookshareWeb do
@@ -73,7 +72,6 @@ defmodule BookshareWeb.Router do
 
     get "/", CategoryController, :index
     get "/:id", CategoryController, :show
-    post "/add", CategoryController, :create_category
   end
 
 

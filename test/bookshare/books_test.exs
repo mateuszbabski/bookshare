@@ -24,7 +24,7 @@ defmodule Bookshare.BooksTest do
     end
 
     test "list books/0 returns all books", %{user: user} do
-      book = BooksFixtures.book_fixture(user, @valid_attrs)
+      _book = BooksFixtures.book_fixture(user, @valid_attrs)
       assert Books.list_books()
     end
 

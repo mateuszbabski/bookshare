@@ -52,7 +52,6 @@ defmodule BookshareWeb.BookController do
     with  true           <- book.user_id == user.id,
           {:ok, %Book{}} <- Books.delete_book(book) do
             conn
-            |> put_status(:no_content)
             |> render("deleted.json")
     end
   end

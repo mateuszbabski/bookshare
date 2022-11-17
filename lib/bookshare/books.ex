@@ -59,15 +59,6 @@ defmodule Bookshare.Books do
 
   """
 
-  # def create_book(user, %{"authors" => _authors, "categories" => _categories} = attrs) do
-  #   %Book{}
-  #   |> Book.changeset(Map.drop(attrs, ["authors", "categories"]))
-  #   |> Ecto.Changeset.put_assoc(:user, user)
-  #   |> load_authors_assoc(attrs)
-  #   |> load_categories_assoc(attrs)
-  #   |> Repo.insert()
-  # end
-
   def create_book(user, attrs \\ %{}) do
     multi_result =
       Multi.new()
