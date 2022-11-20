@@ -9,6 +9,7 @@ defmodule Bookshare.Accounts.User do
     field :is_confirmed, :boolean
 
     has_one :profile, Bookshare.Accounts.Profile, on_delete: :delete_all
+    has_many :reviews, Bookshare.Comments.Review, on_delete: :delete_all
 
     timestamps()
   end
