@@ -51,8 +51,8 @@ defmodule BookshareWeb.BookController do
 
     with  true           <- book.user_id == user.id,
           {:ok, %Book{}} <- Books.delete_book(book) do
-            conn
-            |> render("deleted.json")
+
+            Plug.Conn.send_resp(conn, :no_content, "")
     end
   end
 end

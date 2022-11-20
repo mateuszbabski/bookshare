@@ -97,7 +97,7 @@ defmodule BookshareWeb.BookControllerTest do
 
       book = BooksFixtures.book_fixture(user, @valid_attrs)
       conn = delete(conn, Routes.book_path(conn, :delete, book))
-      assert json_response(conn, 200)["message"] == "Book deleted"
+      assert response(conn, 204)
     end
   end
 
