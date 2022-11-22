@@ -171,20 +171,4 @@ defmodule Bookshare.Books do
   def change_book(%Book{} = book, attrs \\ %{}) do
     Book.changeset(book, attrs)
   end
-
-  # defp load_authors_assoc(book, %{"authors" => authors} = _attrs) do
-  #   Repo.insert_all("authors", [[name: authors, inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()]], on_conflict: :nothing)
-  #   authors = Repo.all(from a in Author, where: a.name == ^authors)
-  #   book
-  #   |> Ecto.Changeset.change()
-  #   |> Ecto.Changeset.put_assoc(:authors, authors)
-  # end
-
-  # defp load_categories_assoc(book, %{"categories" => categories} = _attrs) do
-  #   Repo.insert_all("categories", [[name: categories, inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()]], on_conflict: :nothing)
-  #   categories = Repo.all(from c in Category, where: c.name == ^categories)
-  #   book
-  #   |> Ecto.Changeset.change()
-  #   |> Ecto.Changeset.put_assoc(:categories, categories)
-  # end
 end

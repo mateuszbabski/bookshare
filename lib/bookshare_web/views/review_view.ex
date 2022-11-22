@@ -10,6 +10,15 @@ defmodule BookshareWeb.ReviewView do
     %{data: render_one(review, ReviewView, "review.json")}
   end
 
+  def render("review_list.json", %{review: review}) do
+    %{
+      id: review.id,
+      text: review.text,
+      rating: review.rating,
+      author_id: review.review_author_id
+    }
+  end
+
   def render("review.json", %{review: review}) do
     %{
       id: review.id,
@@ -17,15 +26,6 @@ defmodule BookshareWeb.ReviewView do
       rating: review.rating,
       author_id: review.review_author_id,
       user_reviewed: review.user_id
-    }
-  end
-
-  def render("review_list.json", %{review: review}) do
-    %{
-      id: review.id,
-      text: review.text,
-      rating: review.rating,
-      author_id: review.review_author_id
     }
   end
 end

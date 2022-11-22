@@ -20,7 +20,7 @@ defmodule BookshareWeb.ReviewController do
     with {:ok, %Review{} = review} <- Comments.create_review(reviewed_user, review_params) do
       conn
       |> put_status(:created)
-      |> render("show.json", review: review)
+      |> render("review.json", review: review)
     end
   end
 
@@ -41,15 +41,14 @@ defmodule BookshareWeb.ReviewController do
 
       false -> json(conn, %{message: "You cant update this review"})
     end
-
   end
 
   def delete(conn, %{"id" => id}) do
     review_author = conn.assigns.current_user
     review = Comments.get_review!(id)
 
-    with true            <- review.review_author_id == review_author.id,
-        {:ok, %Review{}} <- Comments.delete_review(review) do
+    with true             <- review.review_author_id == review_author.id,
+         {:ok, %Review{}} <- Comments.delete_review(review) do
       send_resp(conn, :no_content, "")
     end
   end
