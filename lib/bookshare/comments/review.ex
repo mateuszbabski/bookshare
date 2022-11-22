@@ -16,9 +16,13 @@ defmodule Bookshare.Comments.Review do
   @doc false
   def changeset(review, attrs) do
     review
-    |> cast(attrs, [:text, :rating])
-    |> validate_required([:text, :rating])
+    |> cast(attrs, [:text, :rating, :review_author_id])
+    |> validate_required([:text, :rating, :review_author_id])
     |> validate_length(:text, [min: 1, max: 1000, message: "Review text has to have max 1000 characters and can not be empty"])
-    |> validate_number(:rating, [min: 1, max: 5, message: "Rating needs to be between 1 and 5"])
+    |> validate_number(:rating, [
+                                greater_than_or_equal_to: 1,
+                                less_than_or_equal_to: 5,
+                                message: "Rating needs to be between 1 and 5"
+                                ])
   end
 end

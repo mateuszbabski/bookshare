@@ -18,6 +18,8 @@ defmodule BookshareWeb.Router do
     post "/create", ProfileController, :create
     patch "/update", ProfileController, :update
     get "/account", ProfileController, :show_me
+
+    post "/:id/add", ReviewController, :add_review
   end
 
   scope "/api/user", BookshareWeb do
