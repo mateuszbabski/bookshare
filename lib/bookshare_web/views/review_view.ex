@@ -3,7 +3,7 @@ defmodule BookshareWeb.ReviewView do
   alias BookshareWeb.ReviewView
 
   def render("index.json", %{reviews: reviews}) do
-    %{data: render_many(reviews, ReviewView, "review.json")}
+    %{data: render_many(reviews, ReviewView, "review_list.json")}
   end
 
   def render("show.json", %{review: review}) do
@@ -14,9 +14,18 @@ defmodule BookshareWeb.ReviewView do
     %{
       id: review.id,
       text: review.text,
-      rating: review.rating
-      # author_id: review.review_author_id,
-      # user_reviewed: review.user_id
+      rating: review.rating,
+      author_id: review.review_author_id,
+      user_reviewed: review.user_id
+    }
+  end
+
+  def render("review_list.json", %{review: review}) do
+    %{
+      id: review.id,
+      text: review.text,
+      rating: review.rating,
+      author_id: review.review_author_id
     }
   end
 end

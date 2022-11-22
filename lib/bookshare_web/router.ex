@@ -1,4 +1,5 @@
 defmodule BookshareWeb.Router do
+
   use BookshareWeb, :router
 
   import BookshareWeb.Auth
@@ -19,7 +20,7 @@ defmodule BookshareWeb.Router do
     patch "/update", ProfileController, :update
     get "/account", ProfileController, :show_me
 
-    post "/:id/add", ReviewController, :add_review
+    post "/:id/add_review", ReviewController, :add_review
   end
 
   scope "/api/user", BookshareWeb do
@@ -27,6 +28,8 @@ defmodule BookshareWeb.Router do
 
     get "/all", ProfileController, :index
     get "/:id", ProfileController, :show
+
+    get "/:id/reviews", ReviewController, :index
   end
 
   scope "/api/auth", BookshareWeb do
@@ -62,6 +65,19 @@ defmodule BookshareWeb.Router do
     delete "/delete/:id", BookController, :delete
   end
 
+  scope "/api/reviews", BookshareWeb do
+    pipe_through :api
+
+    get "/:id", ReviewController, :show_review
+  end
+
+  scope "/api/reviews", BookshareWeb do
+    pipe_through [:api, :protected]
+
+    patch "/:id", ReviewController, :update_review
+    delete "/:id", ReviewController, :delete
+  end
+
   scope "/api/author", BookshareWeb do
     pipe_through :api
 
@@ -69,7 +85,7 @@ defmodule BookshareWeb.Router do
     get "/:id", AuthorController, :show
   end
 
-    scope "/api/category", BookshareWeb do
+  scope "/api/category", BookshareWeb do
     pipe_through :api
 
     get "/", CategoryController, :index

@@ -7,10 +7,10 @@ defmodule BookshareWeb.ReviewController do
 
   action_fallback BookshareWeb.FallbackController
 
-#   def index(conn, _params) do
-#     reviews = Comments.list_reviews()
-#     render(conn, "index.json", reviews: reviews)
-#   end
+  def index(conn, %{"id" => id}) do
+    reviews = Comments.list_reviews(id)
+    render(conn, "index.json", reviews: reviews)
+  end
 
   def add_review(conn, %{"id" => id, "review" => review_params}) do
     reviewed_user = Auth.get_user!(id)
@@ -24,24 +24,33 @@ defmodule BookshareWeb.ReviewController do
     end
   end
 
-#   def show(conn, %{"id" => id}) do
-#     review = Comments.get_review!(id)
-#     render(conn, "show.json", review: review)
-#   end
+  def show_review(conn, %{"id" => id}) do
+    review = Comments.get_review!(id)
+    render(conn, "show.json", review: review)
+  end
 
-#   def update(conn, %{"id" => id, "review" => review_params}) do
-#     review = Comments.get_review!(id)
+  def update_review(conn, %{"id" => id, "review" => review_params}) do
+    review_author = conn.assigns.current_user
+    review = Comments.get_review!(id)
 
-#     with {:ok, %Review{} = review} <- Comments.update_review(review, review_params) do
-#       render(conn, "show.json", review: review)
-#     end
-#   end
+    with true                      <- review.review_author_id == review_author.id,
+         {:ok, %Review{} = review} <- Comments.update_review(review, review_params) do
+          render(conn, "show.json", review: review)
+    else
+      {:error, changeset} -> {:error, changeset}
 
-#   def delete(conn, %{"id" => id}) do
-#     review = Comments.get_review!(id)
+      false -> json(conn, %{message: "You cant update this review"})
+    end
 
-#     with {:ok, %Review{}} <- Comments.delete_review(review) do
-#       send_resp(conn, :no_content, "")
-#     end
-#   end
+  end
+
+  def delete(conn, %{"id" => id}) do
+    review_author = conn.assigns.current_user
+    review = Comments.get_review!(id)
+
+    with true            <- review.review_author_id == review_author.id,
+        {:ok, %Review{}} <- Comments.delete_review(review) do
+      send_resp(conn, :no_content, "")
+    end
+  end
 end

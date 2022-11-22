@@ -9,16 +9,17 @@ defmodule Bookshare.Comments do
   alias Bookshare.Comments.Review
 
   @doc """
-  Returns the list of reviews.
+  Returns the list of reviews for specific user.
 
   ## Examples
 
-      iex> list_reviews()
+      iex> list_reviews(id)
       [%Review{}, ...]
 
   """
-  def list_reviews do
-    Repo.all(Review)
+  def list_reviews(id) do
+    query = from r in Review, where: r.user_id == ^id
+    Repo.all(query)
   end
 
   @doc """
@@ -37,15 +38,23 @@ defmodule Bookshare.Comments do
   """
   def get_review!(id), do: Repo.get!(Review, id)
 
+  def get_review(user_id, review_id) do
+    query = from r in Review,
+            where: r.user_id == ^user_id,
+            where: r.id == ^review_id
+
+    Repo.all(query)
+  end
+
   @doc """
-  Creates a review.
+  Creates a review and assocciate it with a specific user.
 
   ## Examples
 
-      iex> create_review(%{field: value})
+      iex> create_review(user, %{field: value})
       {:ok, %Review{}}
 
-      iex> create_review(%{field: bad_value})
+      iex> create_review(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
