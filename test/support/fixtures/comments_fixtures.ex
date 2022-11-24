@@ -1,21 +1,15 @@
-# defmodule Bookshare.CommentsFixtures do
-#   @moduledoc """
-#   This module defines test helpers for creating
-#   entities via the `Bookshare.Comments` context.
-#   """
+defmodule Bookshare.CommentsFixtures do
+  @moduledoc """
+  This module defines test helpers for creating
+  entities via the `Bookshare.Comments` context.
+  """
 
-#   @doc """
-#   Generate a review.
-#   """
-#   def review_fixture(attrs \\ %{}) do
-#     {:ok, review} =
-#       attrs
-#       |> Enum.into(%{
-#         rating: "120.5",
-#         text: "some text"
-#       })
-#       |> Bookshare.Comments.create_review()
+  @doc """
+  Generate a review.
+  """
+  def review_fixture(user, attrs \\ %{}) do
+    {:ok, review} = Bookshare.Comments.create_review(user, attrs)
 
-#     review
-#   end
-# end
+    review
+  end
+end
