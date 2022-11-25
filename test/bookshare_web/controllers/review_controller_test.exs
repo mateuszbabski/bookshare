@@ -38,6 +38,21 @@ defmodule BookshareWeb.ReviewControllerTest do
     end
   end
 
+  describe "show_review" do
+
+    test "show_review/1 returns review when exists", %{conn: conn} do
+      review = create_review(@create_attrs)
+      conn = get(conn, Routes.review_path(conn, :show_review, review.id))
+      assert json_response(conn, 200)
+    end
+
+    test "show_review/1 returns error when review doesnt exists", %{conn: conn} do
+        assert_error_sent 404, fn ->
+          get(conn, Routes.review_path(conn, :show_review, 1))
+        end
+    end
+  end
+
   describe "create review" do
     setup [:create_user]
 
@@ -124,7 +139,7 @@ defmodule BookshareWeb.ReviewControllerTest do
       assert response(conn, 204)
 
       assert_error_sent 404, fn ->
-        get(conn, Routes.review_path(conn, :show_review, review))
+        get(conn, Routes.review_path(conn, :show_review, review.id))
       end
     end
   end
