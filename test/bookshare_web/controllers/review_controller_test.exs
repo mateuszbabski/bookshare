@@ -81,7 +81,7 @@ defmodule BookshareWeb.ReviewControllerTest do
       review = create_review(valid_attrs)
 
       conn = patch(conn, Routes.review_path(conn, :update_review, review), review: @update_attrs)
-      assert json_response(conn, 200)["data"]
+
       assert %{
                "rating" => "4.5",
                "text" => "some updated review"
