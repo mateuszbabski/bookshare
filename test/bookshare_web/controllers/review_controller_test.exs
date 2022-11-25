@@ -1,14 +1,10 @@
 defmodule BookshareWeb.ReviewControllerTest do
   use BookshareWeb.ConnCase
 
-  import Bookshare.CommentsFixtures
-  import Bookshare.AccountsFixtures
   import Bookshare.Factory
 
   alias Bookshare.CommentsFixtures
   alias Bookshare.AccountsFixtures
-  alias Bookshare.Repo
-  alias Bookshare.Comments.Review
 
   @create_attrs %{
     rating: "3.5",
@@ -86,11 +82,7 @@ defmodule BookshareWeb.ReviewControllerTest do
 
       conn = patch(conn, Routes.review_path(conn, :update_review, review), review: @update_attrs)
       assert json_response(conn, 200)["data"]
-
-      conn = get(conn, Routes.review_path(conn, :show_review, review.id))
-
       assert %{
-               "id" => id,
                "rating" => "4.5",
                "text" => "some updated review"
              } = json_response(conn, 200)["data"]
@@ -137,7 +129,7 @@ defmodule BookshareWeb.ReviewControllerTest do
     end
   end
 
-  defp create_review(attrs \\ %{}) do
+  defp create_review(attrs) do
     reviewed_user = AccountsFixtures.user_fixture()
     review = CommentsFixtures.review_fixture(reviewed_user, attrs)
     review
