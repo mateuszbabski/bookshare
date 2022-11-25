@@ -1,88 +1,145 @@
-# defmodule BookshareWeb.ReviewControllerTest do
-#   use BookshareWeb.ConnCase
+defmodule BookshareWeb.ReviewControllerTest do
+  use BookshareWeb.ConnCase
 
-#   import Bookshare.CommentsFixtures
+  import Bookshare.CommentsFixtures
+  import Bookshare.AccountsFixtures
+  import Bookshare.Factory
 
-#   alias Bookshare.Comments.Review
+  alias Bookshare.CommentsFixtures
+  alias Bookshare.AccountsFixtures
+  alias Bookshare.Repo
+  alias Bookshare.Comments.Review
 
-#   @create_attrs %{
-#     rating: "120.5",
-#     text: "some text"
-#   }
-#   @update_attrs %{
-#     rating: "456.7",
-#     text: "some updated text"
-#   }
-#   @invalid_attrs %{rating: nil, text: nil}
+  @create_attrs %{
+    rating: "3.5",
+    text: "some review",
+    review_author_id: 1000
+  }
+  @update_attrs %{
+    rating: "4.5",
+    text: "some updated review"
+  }
+  @invalid_attrs %{rating: nil, text: nil}
 
-#   setup %{conn: conn} do
-#     {:ok, conn: put_req_header(conn, "accept", "application/json")}
-#   end
+  @reviewed_user %{id: 1, email: "reviewed_user@example.com", password: nil, is_confirmed: true, hash_password: "hash_password"}
 
-#   describe "index" do
-#     test "lists all reviews", %{conn: conn} do
-#       conn = get(conn, Routes.review_path(conn, :index))
-#       assert json_response(conn, 200)["data"] == []
-#     end
-#   end
+  setup %{conn: conn} do
+    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+  end
 
-#   describe "create review" do
-#     test "renders review when data is valid", %{conn: conn} do
-#       conn = post(conn, Routes.review_path(conn, :create), review: @create_attrs)
-#       assert %{"id" => id} = json_response(conn, 201)["data"]
+  def fixture(:user) do
+    insert(:user, email: "test0@test0.local", password: "test0000", is_confirmed: true)
+  end
 
-#       conn = get(conn, Routes.review_path(conn, :show, id))
+  def create_user(_) do
+    %{user: fixture(:user)}
+  end
 
-#       assert %{
-#                "id" => ^id,
-#                "rating" => "120.5",
-#                "text" => "some text"
-#              } = json_response(conn, 200)["data"]
-#     end
+  describe "index" do
+    test "lists all reviews", %{conn: conn} do
+      conn = get(conn, Routes.review_path(conn, :index, @reviewed_user.id))
+      assert json_response(conn, 200)["data"] == []
+    end
+  end
 
-#     test "renders errors when data is invalid", %{conn: conn} do
-#       conn = post(conn, Routes.review_path(conn, :create), review: @invalid_attrs)
-#       assert json_response(conn, 422)["errors"] != %{}
-#     end
-#   end
+  describe "create review" do
+    setup [:create_user]
 
-#   describe "update review" do
-#     setup [:create_review]
+    test "renders review when data is valid", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
 
-#     test "renders review when data is valid", %{conn: conn, review: %Review{id: id} = review} do
-#       conn = put(conn, Routes.review_path(conn, :update, review), review: @update_attrs)
-#       assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      reviewed_user = AccountsFixtures.user_fixture()
+      valid_attrs = %{rating: "3.5", text: "review", review_author_id: user.id}
 
-#       conn = get(conn, Routes.review_path(conn, :show, id))
+      conn = post(conn, Routes.review_path(conn, :add_review, reviewed_user.id), review: valid_attrs)
+      assert json_response(conn, 201)
+      assert json_response(conn, 201)["rating"] == "3.5"
+      assert json_response(conn, 201)["text"] == "review"
+    end
 
-#       assert %{
-#                "id" => ^id,
-#                "rating" => "456.7",
-#                "text" => "some updated text"
-#              } = json_response(conn, 200)["data"]
-#     end
+    test "renders errors when data is invalid", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
+      reviewed_user = AccountsFixtures.user_fixture()
 
-#     test "renders errors when data is invalid", %{conn: conn, review: review} do
-#       conn = put(conn, Routes.review_path(conn, :update, review), review: @invalid_attrs)
-#       assert json_response(conn, 422)["errors"] != %{}
-#     end
-#   end
+      conn = post(conn, Routes.review_path(conn, :add_review, reviewed_user.id), review: @invalid_attrs)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
 
-#   describe "delete review" do
-#     setup [:create_review]
+    test "renders unauthorized when user is not logged id", %{conn: conn} do
+      reviewed_user = AccountsFixtures.user_fixture()
+      conn = post(conn, Routes.review_path(conn, :add_review, reviewed_user.id), review: @create_attrs)
+      assert json_response(conn, 401)["errors"] != %{}
+    end
+  end
 
-#     test "deletes chosen review", %{conn: conn, review: review} do
-#       conn = delete(conn, Routes.review_path(conn, :delete, review))
-#       assert response(conn, 204)
+  describe "update review" do
+    setup [:create_user]
 
-#       assert_error_sent 404, fn ->
-#         get(conn, Routes.review_path(conn, :show, review))
-#       end
-#     end
-#   end
+    test "renders review when data is valid", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
+      valid_attrs = %{rating: "3.5", text: "review", review_author_id: user.id}
 
-#   defp create_review(_) do
-#     review = review_fixture()
-#     %{review: review}
-#   end
-# end
+      review = create_review(valid_attrs)
+
+      conn = patch(conn, Routes.review_path(conn, :update_review, review), review: @update_attrs)
+      assert json_response(conn, 200)["data"]
+
+      conn = get(conn, Routes.review_path(conn, :show_review, review.id))
+
+      assert %{
+               "id" => id,
+               "rating" => "4.5",
+               "text" => "some updated review"
+             } = json_response(conn, 200)["data"]
+    end
+
+    test "renders errors when data is invalid", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
+
+      valid_attrs = %{rating: "3.5", text: "review", review_author_id: user.id}
+      review = create_review(valid_attrs)
+
+      conn = patch(conn, Routes.review_path(conn, :update_review, review), review: @invalid_attrs)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
+
+    test "renders unauthorized when user is not review author", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
+      valid_attrs = %{rating: "3.5", text: "review", review_author_id: 1000}
+      review = create_review(valid_attrs)
+
+      conn = patch(conn, Routes.review_path(conn, :update_review, review), review: @invalid_attrs)
+      assert json_response(conn, 401)["errors"] != %{}
+    end
+  end
+
+  describe "delete review" do
+    setup [:create_user]
+
+    test "deletes chosen review", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
+
+      valid_attrs = %{rating: "3.5", text: "review", review_author_id: user.id}
+      review = create_review(valid_attrs)
+
+      conn = delete(conn, Routes.review_path(conn, :delete, review))
+      assert response(conn, 204)
+
+      assert_error_sent 404, fn ->
+        get(conn, Routes.review_path(conn, :show_review, review))
+      end
+    end
+  end
+
+  defp create_review(attrs \\ %{}) do
+    reviewed_user = AccountsFixtures.user_fixture()
+    review = CommentsFixtures.review_fixture(reviewed_user, attrs)
+    review
+  end
+end

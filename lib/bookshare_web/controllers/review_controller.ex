@@ -39,7 +39,9 @@ defmodule BookshareWeb.ReviewController do
     else
       {:error, changeset} -> {:error, changeset}
 
-      false -> json(conn, %{message: "You cant update this review"})
+      false -> conn
+                |> put_status(:unauthorized)
+                |>json(%{message: "You cant update this review"})
     end
   end
 
