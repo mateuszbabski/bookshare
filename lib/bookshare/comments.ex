@@ -59,7 +59,6 @@ defmodule Bookshare.Comments do
            true | nil
 
   """
-
   def check_if_user_already_left_review(user_id, user_id), do: false
 
   def check_if_user_already_left_review(user_id, review_author_id) do
@@ -122,6 +121,10 @@ defmodule Bookshare.Comments do
   def delete_review(%Review{} = review) do
     Repo.delete(review)
   end
+
+  # def deliver_notification_about_new_review(_) do
+
+  # end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking review changes.

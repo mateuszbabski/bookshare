@@ -1,0 +1,5 @@
+NEW REVIEW!
+
+User <%= @review_author.email %> has left you a review.
+Rating: <%= @review.rating %>
+Text: <%= @review.text %>

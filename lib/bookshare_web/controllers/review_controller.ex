@@ -4,6 +4,7 @@ defmodule BookshareWeb.ReviewController do
   alias Bookshare.Auth
   alias Bookshare.Comments
   alias Bookshare.Comments.Review
+  alias Bookshare.Comments.CommentNotifier
 
   action_fallback BookshareWeb.FallbackController
 
@@ -19,6 +20,7 @@ defmodule BookshareWeb.ReviewController do
 
     with  nil                       <- Comments.check_if_user_already_left_review(reviewed_user.id, review_author.id),
           {:ok, %Review{} = review} <- Comments.create_review(reviewed_user, review_params) do
+      CommentNotifier.send_notification_about_new_review(reviewed_user, review_author, review)
       conn
       |> put_status(:created)
       |> render("review.json", review: review)
