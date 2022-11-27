@@ -122,10 +122,6 @@ defmodule Bookshare.Comments do
     Repo.delete(review)
   end
 
-  # def deliver_notification_about_new_review(_) do
-
-  # end
-
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking review changes.
 

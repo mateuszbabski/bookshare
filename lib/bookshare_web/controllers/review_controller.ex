@@ -32,6 +32,8 @@ defmodule BookshareWeb.ReviewController do
       true -> conn
               |> put_status(:forbidden)
               |> json(%{message: "You've already left a review for this user"})
+
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
 
