@@ -39,7 +39,6 @@ defmodule BookshareWeb.ReviewControllerTest do
   end
 
   describe "show_review" do
-
     test "show_review/1 returns review when exists", %{conn: conn} do
       review = create_review(@create_attrs)
       conn = get(conn, Routes.review_path(conn, :show_review, review.id))

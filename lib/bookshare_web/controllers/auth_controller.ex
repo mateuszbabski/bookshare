@@ -34,12 +34,12 @@ defmodule BookshareWeb.AuthController do
     with {:ok, user} <- Auth.register_user(params),
          {:ok, encoded_token} <- Auth.deliver_confirmation_instructions(user) do
 
-        conn
-        |> put_status(:created)
-        |> render("register.json", user: user, encoded_token: encoded_token)
-      else
-        {:error, changeset} ->
-          {:error, changeset}
+      conn
+      |> put_status(:created)
+      |> render("register.json", user: user, encoded_token: encoded_token)
+    else
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
 

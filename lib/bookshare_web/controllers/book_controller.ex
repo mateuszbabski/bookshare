@@ -37,7 +37,7 @@ defmodule BookshareWeb.BookController do
 
     with  true                  <- book.user_id == user.id,
           {:ok, %Book{} = book} <- Books.update_book(book, book_params) do
-            render(conn, "show.json", book: book)
+      render(conn, "show.json", book: book)
     else
       {:error, changeset} -> {:error, changeset}
 
@@ -52,7 +52,7 @@ defmodule BookshareWeb.BookController do
     with  true           <- book.user_id == user.id,
           {:ok, %Book{}} <- Books.delete_book(book) do
 
-            Plug.Conn.send_resp(conn, :no_content, "")
+      send_resp(conn, :no_content, "")
     end
   end
 end

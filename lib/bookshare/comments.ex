@@ -47,6 +47,30 @@ defmodule Bookshare.Comments do
   end
 
   @doc """
+  Checks if user tries to leave a review for himself
+  or if already left a review and tries to do it again
+
+  ## Example
+
+      iex> check_if_user_already_left_review(id, id)
+           false
+
+      iex> check_if_user_already_left_review(user_id, review_author_id)
+           true | nil
+
+  """
+
+  def check_if_user_already_left_review(user_id, user_id), do: false
+
+  def check_if_user_already_left_review(user_id, review_author_id) do
+    query = from r in Review,
+            where: r.user_id == ^user_id,
+            where: r.review_author_id == ^review_author_id
+
+    if Repo.one(query), do: true
+  end
+
+  @doc """
   Creates a review and assocciate it with a specific user.
 
   ## Examples
