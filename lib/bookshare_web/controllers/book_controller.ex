@@ -33,10 +33,10 @@ defmodule BookshareWeb.BookController do
 
   def update(conn, %{"id" => id, "book" => book_params}) do
     user = conn.assigns.current_user
-    book = Books.get_book!(id)
 
-    with  true                  <- book.user_id == user.id,
-          {:ok, %Book{} = book} <- Books.update_book(book, book_params) do
+    with book                  <- Books.get_book!(id),
+         true                  <- book.user_id == user.id,
+        {:ok, %Book{} = book}  <- Books.update_book(book, book_params) do
       render(conn, "show.json", book: book)
     else
       {:error, changeset} -> {:error, changeset}
@@ -47,10 +47,10 @@ defmodule BookshareWeb.BookController do
 
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    book = Books.get_book!(id)
 
-    with  true           <- book.user_id == user.id,
-          {:ok, %Book{}} <- Books.delete_book(book) do
+    with book           <- Books.get_book!(id),
+         true           <- book.user_id == user.id,
+         {:ok, %Book{}} <- Books.delete_book(book) do
 
       send_resp(conn, :no_content, "")
     end

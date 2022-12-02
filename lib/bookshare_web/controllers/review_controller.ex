@@ -14,12 +14,12 @@ defmodule BookshareWeb.ReviewController do
   end
 
   def add_review(conn, %{"id" => id, "review" => review_params}) do
-    reviewed_user = Auth.get_user!(id)
     review_author = conn.assigns.current_user
     review_params = Map.put(review_params, "review_author_id", review_author.id)
 
-    with  nil                       <- Comments.check_if_user_already_left_review(reviewed_user.id, review_author.id),
-          {:ok, %Review{} = review} <- Comments.create_review(reviewed_user, review_params) do
+    with  reviewed_user                 <- Auth.get_user!(id),
+          nil                           <- Comments.check_if_user_already_left_review(reviewed_user.id, review_author.id),
+          {:ok, %Review{} = review}     <- Comments.create_review(reviewed_user, review_params) do
       CommentNotifier.send_notification_about_new_review(reviewed_user, review_author, review)
       conn
       |> put_status(:created)
@@ -44,9 +44,9 @@ defmodule BookshareWeb.ReviewController do
 
   def update_review(conn, %{"id" => id, "review" => review_params}) do
     review_author = conn.assigns.current_user
-    review = Comments.get_review!(id)
 
-    with true                      <- review.review_author_id == review_author.id,
+    with  review                   <- Comments.get_review!(id),
+          true                     <- review.review_author_id == review_author.id,
          {:ok, %Review{} = review} <- Comments.update_review(review, review_params) do
       render(conn, "show.json", review: review)
     else
@@ -60,9 +60,9 @@ defmodule BookshareWeb.ReviewController do
 
   def delete(conn, %{"id" => id}) do
     review_author = conn.assigns.current_user
-    review = Comments.get_review!(id)
 
-    with true             <- review.review_author_id == review_author.id,
+    with review           <- Comments.get_review!(id),
+         true             <- review.review_author_id == review_author.id,
          {:ok, %Review{}} <- Comments.delete_review(review) do
       send_resp(conn, :no_content, "")
     end
