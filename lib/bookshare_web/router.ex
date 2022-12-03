@@ -80,6 +80,12 @@ defmodule BookshareWeb.Router do
   end
 
   scope "/api/responses", BookshareWeb do
+    pipe_through :api
+
+    get "/:id", ResponseController, :show_response
+  end
+
+  scope "/api/responses", BookshareWeb do
     pipe_through [:api, :protected]
 
     delete "/:id", ResponseController, :delete

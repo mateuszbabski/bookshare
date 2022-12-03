@@ -39,12 +39,8 @@ defmodule Bookshare.Comments do
   """
   def get_review!(id), do: Repo.get!(Review, id)
 
-  def get_review(user_id, review_id) do
-    query = from r in Review,
-            where: r.user_id == ^user_id,
-            where: r.id == ^review_id
-
-    Repo.all(query)
+  def get_review(id) do
+    Repo.get(Review, id) |> Repo.preload(:responses)
   end
 
   @doc """
@@ -142,6 +138,12 @@ defmodule Bookshare.Comments do
     |> Ecto.Changeset.put_assoc(:user, user)
     |> Ecto.Changeset.put_assoc(:review, review)
     |> Repo.insert()
+  end
+
+  def get_response!(id), do: Repo.get!(Response, id)
+
+  def delete_response(%Response{} = response) do
+    Repo.delete(response)
   end
 
   def check_if_user_can_leave_response(review_id, response_author_id) do

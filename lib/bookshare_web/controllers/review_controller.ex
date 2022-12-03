@@ -38,7 +38,7 @@ defmodule BookshareWeb.ReviewController do
   end
 
   def show_review(conn, %{"id" => id}) do
-    review = Comments.get_review!(id)
+    review = Comments.get_review(id)
     render(conn, "show.json", review: review)
   end
 
@@ -54,7 +54,7 @@ defmodule BookshareWeb.ReviewController do
 
       false -> conn
                 |> put_status(:unauthorized)
-                |>json(%{message: "You cant update this review"})
+                |> json(%{message: "You cant update this review"})
     end
   end
 
