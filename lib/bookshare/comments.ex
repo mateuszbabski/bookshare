@@ -7,6 +7,7 @@ defmodule Bookshare.Comments do
   alias Bookshare.Repo
 
   alias Bookshare.Comments.Review
+  alias Bookshare.Comments.Response
 
   @doc """
   Returns the list of reviews for specific user.
@@ -133,5 +134,20 @@ defmodule Bookshare.Comments do
   """
   def change_review(%Review{} = review, attrs \\ %{}) do
     Review.changeset(review, attrs)
+  end
+
+  def create_response(user, review, attrs \\ %{}) do
+    %Response{}
+    |> Response.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
+    |> Ecto.Changeset.put_assoc(:review, review)
+    |> Repo.insert()
+  end
+
+  def check_if_user_can_leave_response(response_author_id) do
+    query = from r in Review,
+            where: ^response_author_id == r.user_id or ^response_author_id == r.review_author_id
+
+    if Repo.one(query), do: true
   end
 end

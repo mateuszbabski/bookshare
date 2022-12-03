@@ -5,6 +5,7 @@ defmodule Bookshare.Comments.Response do
   schema "responses" do
     field :text, :string
 
+    belongs_to :review, Bookshare.Comments.Review, foreign_key: :review_id
     belongs_to :user, Bookshare.Accounts.User, foreign_key: :user_id
 
     timestamps()
