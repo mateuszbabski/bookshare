@@ -1,5 +1,4 @@
 defmodule BookshareWeb.Router do
-
   use BookshareWeb, :router
 
   import BookshareWeb.Auth
@@ -76,6 +75,14 @@ defmodule BookshareWeb.Router do
 
     patch "/:id", ReviewController, :update_review
     delete "/:id", ReviewController, :delete
+
+    post "/:id/create", ResponseController, :add_response
+  end
+
+  scope "/api/responses", BookshareWeb do
+    pipe_through [:api, :protected]
+
+    delete "/:id", ResponseController, :delete
   end
 
   scope "/api/author", BookshareWeb do

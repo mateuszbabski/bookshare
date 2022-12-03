@@ -144,8 +144,9 @@ defmodule Bookshare.Comments do
     |> Repo.insert()
   end
 
-  def check_if_user_can_leave_response(response_author_id) do
+  def check_if_user_can_leave_response(review_id, response_author_id) do
     query = from r in Review,
+            where: ^review_id == r.id,
             where: ^response_author_id == r.user_id or ^response_author_id == r.review_author_id
 
     if Repo.one(query), do: true
