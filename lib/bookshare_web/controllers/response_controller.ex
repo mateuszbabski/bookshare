@@ -4,6 +4,8 @@ defmodule BookshareWeb.ResponseController do
   alias Bookshare.Comments
   alias Bookshare.Comments.Response
 
+  action_fallback BookshareWeb.FallbackController
+
   def add_response(conn, %{"id" => id, "response" => response_params}) do
     response_author = conn.assigns.current_user
 

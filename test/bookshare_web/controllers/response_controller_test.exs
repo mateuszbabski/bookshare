@@ -71,17 +71,17 @@ defmodule BookshareWeb.ResponseControllerTest do
       assert json_response(conn, 403)["message"] == "You can't leave response to review that isn't about you or you aren't its author"
     end
 
-    # test "returns ecto changeset when data is invalid", %{conn: conn, user: user} do
-    #   token = Bookshare.Auth.generate_user_session_token(user)
-    #   conn = conn |> put_req_header("authorization", "Token #{token}")
+    test "returns ecto changeset when data is invalid", %{conn: conn, user: user} do
+      token = Bookshare.Auth.generate_user_session_token(user)
+      conn = conn |> put_req_header("authorization", "Token #{token}")
 
-    #   valid_review_attrs = %{rating: "4", text: "review", review_author_id: user.id}
+      valid_review_attrs = %{rating: "4", text: "review", review_author_id: user.id}
 
-    #   review = create_review(valid_review_attrs)
+      review = create_review(valid_review_attrs)
 
-    #   conn = post(conn, Routes.response_path(conn, :add_response, review.id), response: @invalid_response_params)
-    #   assert json_response(conn, 422)["errors"] != %{}
-    # end
+      conn = post(conn, Routes.response_path(conn, :add_response, review.id), response: @invalid_response_params)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
   end
 
   describe "delete response" do
