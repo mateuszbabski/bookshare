@@ -23,7 +23,7 @@ defmodule BookshareWeb.ReviewController do
       CommentNotifier.send_notification_about_new_review(reviewed_user, review_author, review)
       conn
       |> put_status(:created)
-      |> render("review.json", review: review)
+      |> render("created_review.json", review: review)
     else
       false -> conn
                |> put_status(:forbidden)
@@ -38,14 +38,19 @@ defmodule BookshareWeb.ReviewController do
   end
 
   def show_review(conn, %{"id" => id}) do
-    review = Comments.get_review(id)
-    render(conn, "show.json", review: review)
+    with %Review{} = review <- Comments.get_review(id) do
+      render(conn, "show.json", review: review)
+    else
+      nil -> conn
+             |> put_status(:not_found)
+             |> json(%{message: "Review not found"})
+    end
   end
 
   def update_review(conn, %{"id" => id, "review" => review_params}) do
     review_author = conn.assigns.current_user
 
-    with  review                   <- Comments.get_review!(id),
+    with  review                   <- Comments.get_review(id),
           true                     <- review.review_author_id == review_author.id,
          {:ok, %Review{} = review} <- Comments.update_review(review, review_params) do
       render(conn, "show.json", review: review)

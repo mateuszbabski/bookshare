@@ -15,6 +15,6 @@ defmodule Bookshare.Comments.Response do
     response
     |> cast(attrs, [:text])
     |> validate_required([:text])
-    |> validate_length(:text, [min: 1, max: 500, message: "Review text has to have max 500 characters and can not be empty"])
+    |> validate_length(:text, [min: 1, max: 500, message: "Response has to have max 500 characters and can not be empty"])
   end
 end

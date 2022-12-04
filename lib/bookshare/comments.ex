@@ -134,6 +134,18 @@ defmodule Bookshare.Comments do
     Review.changeset(review, attrs)
   end
 
+  @doc """
+  Creates a response and assocciate it with a specific user and review.
+
+  ## Examples
+
+      iex> create_response(user, review, %{field: value})
+      {:ok, %Response{}}
+
+      iex> create_response(user, review, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
   def create_response(user, review, attrs \\ %{}) do
     %Response{}
     |> Response.changeset(attrs)

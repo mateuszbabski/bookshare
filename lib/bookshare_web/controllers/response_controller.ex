@@ -14,11 +14,11 @@ defmodule BookshareWeb.ResponseController do
       |> put_status(:created)
       |> render("response.json", response: response)
     else
-         nil -> conn
-                |> put_status(:forbidden)
-                |> json(%{message: "You can't leave response to review that is not about you or you aren't its author"})
+      nil -> conn
+             |> put_status(:forbidden)
+             |> json(%{message: "You can't leave response to review that isn't about you or you aren't its author"})
 
-         {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
 

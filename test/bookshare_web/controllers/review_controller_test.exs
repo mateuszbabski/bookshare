@@ -46,9 +46,8 @@ defmodule BookshareWeb.ReviewControllerTest do
     end
 
     test "show_review/1 returns error when review doesnt exists", %{conn: conn} do
-        assert_error_sent 404, fn ->
-          get(conn, Routes.review_path(conn, :show_review, 1))
-        end
+      conn = get(conn, Routes.review_path(conn, :show_review, 1))
+      assert json_response(conn, 404)
     end
   end
 
@@ -137,9 +136,8 @@ defmodule BookshareWeb.ReviewControllerTest do
       conn = delete(conn, Routes.review_path(conn, :delete, review))
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
-        get(conn, Routes.review_path(conn, :show_review, review.id))
-      end
+      conn = get(conn, Routes.review_path(conn, :show_review, review.id))
+      assert json_response(conn, 404)
     end
   end
 
