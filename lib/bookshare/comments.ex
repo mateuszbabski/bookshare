@@ -19,7 +19,9 @@ defmodule Bookshare.Comments do
 
   """
   def list_reviews(id) do
-    query = from r in Review, where: r.user_id == ^id
+    query = from r in Review,
+            where: r.user_id == ^id,
+            order_by: {:desc, r.inserted_at}
     Repo.all(query)
   end
 
@@ -40,7 +42,7 @@ defmodule Bookshare.Comments do
   def get_review!(id), do: Repo.get!(Review, id)
 
   def get_review(id) do
-    Repo.get(Review, id) |> Repo.preload(:responses)
+    Repo.get(Review, id) |> Repo.preload([responses: (from r in Response, order_by: r.inserted_at)])
   end
 
   @doc """

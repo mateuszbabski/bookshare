@@ -36,7 +36,7 @@ defmodule BookshareWeb.BookController do
 
     with book                  <- Books.get_book!(id),
          true                  <- book.user_id == user.id,
-        {:ok, %Book{} = book}  <- Books.update_book(book, book_params) do
+         {:ok, %Book{} = book}  <- Books.update_book(book, book_params) do
       render(conn, "show.json", book: book)
     else
       {:error, changeset} -> {:error, changeset}

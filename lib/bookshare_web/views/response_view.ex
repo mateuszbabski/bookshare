@@ -15,7 +15,8 @@ defmodule BookshareWeb.ResponseView do
       id: response.id,
       text: response.text,
       response_author_id: response.user_id,
-      review: response.review_id
+      review: response.review_id,
+      inserted_at: response.inserted_at
     }
   end
 
@@ -24,7 +25,8 @@ defmodule BookshareWeb.ResponseView do
       id: response.id,
       text: response.text,
       response_author_id: response.user_id,
-      review: response.review_id
+      review: response.review_id,
+      inserted_at: response.inserted_at
     }
   end
 end

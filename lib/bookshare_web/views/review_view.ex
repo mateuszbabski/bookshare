@@ -15,7 +15,8 @@ defmodule BookshareWeb.ReviewView do
       id: review.id,
       text: review.text,
       rating: review.rating,
-      review_author_id: review.review_author_id
+      review_author_id: review.review_author_id,
+      inserted_at: review.inserted_at
     }
   end
 
@@ -27,6 +28,7 @@ defmodule BookshareWeb.ReviewView do
       rating: review.rating,
       review_author_id: review.review_author_id,
       user_reviewed: review.user_id,
+      inserted_at: review.inserted_at,
       responses: responses
     }
   end
