@@ -5,12 +5,15 @@ defmodule Bookshare.CommentsTest do
 
   describe "reviews" do
     alias Bookshare.Comments.Review
+    alias Bookshare.Comments.Response
 
     import Bookshare.CommentsFixtures
 
     @invalid_attrs %{rating: nil, text: nil}
     @reviewed_user %{id: 1, email: "reviewed_user@example.com", password: nil, is_confirmed: true, hash_password: "hash_password"}
     @valid_attrs %{review_author_id: 1000, rating: "4.5", text: "review"}
+    @response_attrs %{text: "response text"}
+    @response_author %{id: 2, email: "response_author@example.com", password: nil, is_confirmed: true, hash_password: "hash_password"}
 
     test "list_reviews/0 returns all reviews" do
       review = review_fixture(@reviewed_user, @valid_attrs)
@@ -62,6 +65,57 @@ defmodule Bookshare.CommentsTest do
     test "change_review/1 returns a review changeset" do
       review = review_fixture(@reviewed_user, @valid_attrs)
       assert %Ecto.Changeset{} = Comments.change_review(review)
+    end
+
+    test "check_if_user_already_left_review/2 returns true if finds review" do
+      _review = review_fixture(@reviewed_user, @valid_attrs)
+      assert true == Comments.check_if_user_already_left_review(@reviewed_user.id, @valid_attrs.review_author_id)
+    end
+
+    test "check_if_user_already_left_review/2 returns false if user wants review himself" do
+      assert false == Comments.check_if_user_already_left_review(@reviewed_user.id, @reviewed_user.id)
+    end
+
+    test "check_if_user_already_left_review/2 returns nil if there is no review" do
+      assert nil == Comments.check_if_user_already_left_review(@reviewed_user.id, @reviewed_user.id + 1)
+    end
+
+    test "create_response/3 creates response with valid params" do
+      review = review_fixture(@reviewed_user, @valid_attrs)
+      assert {:ok, %Response{} = _response} = Comments.create_response(@response_author, review, @response_attrs)
+    end
+
+    test "create_repsonse/3 raises ecto changeset with invalid params" do
+      review = review_fixture(@reviewed_user, @valid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Comments.create_response(@response_author, review, %{text: nil})
+    end
+
+    test "check_if_user_can_leave_response/2 returns true if user can leave response to review" do
+      review = review_fixture(@reviewed_user, @valid_attrs)
+      assert true == Comments.check_if_user_can_leave_response(review.id, @valid_attrs.review_author_id)
+      assert true == Comments.check_if_user_can_leave_response(review.id, @reviewed_user.id)
+    end
+
+    test "check_if_user_can_leave_response/2 returns nil if user can't leave response to review" do
+      review = review_fixture(@reviewed_user, @valid_attrs)
+      assert nil == Comments.check_if_user_can_leave_response(review.id, @response_author.id)
+    end
+
+    test "delete_response/1 returns no content if response deleted" do
+      review = review_fixture(@reviewed_user, @valid_attrs)
+      {:ok, %Response{} = response} = Comments.create_response(@response_author, review, @response_attrs)
+
+      assert {:ok, %Response{}} = Comments.delete_response(response)
+      assert_raise Ecto.NoResultsError, fn -> Comments.get_response!(response.id) end
+    end
+
+    test "get_response!/1 returns response with valid id" do
+      review = review_fixture(@reviewed_user, @valid_attrs)
+      {:ok, %Response{} = response} = Comments.create_response(@response_author, review, @response_attrs)
+
+      assert Comments.get_response!(response.id)
+      assert response.text == "response text"
+      assert response.user_id == @response_author.id
     end
   end
 end
